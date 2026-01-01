@@ -1127,8 +1127,11 @@ const App = () => {
     const [view, setView] = useState('dashboard');
     const [filter, setFilter] = useState('all');
     const [search, setSearch] = useState('');
-    const [patients, setPatients] = useState(() => { const s = localStorage.getItem('patients'); return s ? JSON.parse(s) : INITIAL_PATIENTS; });
-    const [clinicSettings, setClinicSettings] = useState(() => { const s = localStorage.getItem('clinicSettings'); return s ? JSON.parse(s) : {}; });
+    const [patients, setPatients] = useState([]);
+    const [clinicSettings, setClinicSettings] = useState({});
+    const [loadingData, setLoadingData] = useState(true);
+
+    const API_URL = import.meta.env.VITE_API_URL;
 
     // NAVIGATION DATA
     const [selectedPatient, setSelectedPatient] = useState(null);
@@ -1143,9 +1146,29 @@ const App = () => {
     const [toast, setToast] = useState(null);
     const showToast = (msg, type = 'success') => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000); };
 
-    // PERSISTENCIA
-    useEffect(() => { localStorage.setItem('patients', JSON.stringify(patients)); }, [patients]);
-    useEffect(() => { localStorage.setItem('clinicSettings', JSON.stringify(clinicSettings)); }, [clinicSettings]);
+    // DATA FETCHING
+    useEffect(() => {
+        if (!user && !demoMode) return;
+
+        const fetchData = async () => {
+            setLoadingData(true);
+            try {
+                const [pRes, sRes] = await Promise.all([
+                    fetch(`${API_URL}/api/patients`),
+                    fetch(`${API_URL}/api/settings`)
+                ]);
+
+                if (pRes.ok) setPatients(await pRes.json());
+                if (sRes.ok) setClinicSettings(await sRes.json());
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                showToast("Error conectando con el servidor", "error");
+            } finally {
+                setLoadingData(false);
+            }
+        };
+        fetchData();
+    }, [user, demoMode]);
 
     // AUTH EFFECT
     useEffect(() => {
@@ -1157,16 +1180,31 @@ const App = () => {
     }, []);
 
     // HANDLERS
-    const handleSavePatient = (data) => {
-        if (modalData) {
+    const handleSavePatient = async (data) => {
+        // Optimistic UI update
+        const isEdit = !!modalData;
+        const newPatient = { id: isEdit ? modalData.id : Date.now(), ...data, sessions: isEdit ? (modalData.sessions || []) : [], joinedDate: isEdit ? modalData.joinedDate : new Date().toLocaleDateString('es-ES') };
+
+        if (isEdit) {
             setPatients(patients.map(p => p.id === modalData.id ? { ...p, ...data } : p));
-            showToast("Paciente actualizado correctamente");
         } else {
-            const newPatient = { id: Date.now(), ...data, sessions: [], joinedDate: new Date().toLocaleDateString('es-ES') };
             setPatients([...patients, newPatient]);
-            showToast("Nuevo paciente registrado con éxito");
         }
-        setModals({ ...modals, admission: false }); setModalData(null);
+
+        // Sync with API
+        try {
+            await fetch(`${API_URL}/api/patients`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newPatient)
+            });
+            showToast("Paciente guardado correctamente");
+        } catch (e) {
+            showToast("Error guardando en la nube", "error");
+        }
+
+        setModals({ ...modals, admission: false });
+        setModalData(null);
     };
 
     const handleSaveSession = (data) => {
@@ -1226,8 +1264,18 @@ const App = () => {
         );
     }
 
-    if (!user && !demoMode) {
-        return <LoginView onDemoLogin={() => setDemoMode(true)} />;
+    if ((!user && !demoMode) || (authLoading)) {
+        // ... handled above
+    }
+
+    // Add loading spinner for data
+    if ((user || demoMode) && loadingData) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center bg-slate-50 flex-col gap-4">
+                <Loader2 className="w-10 h-10 text-pink-600 animate-spin" />
+                <p className="text-slate-500 font-medium">Conectando con Google Cloud...</p>
+            </div>
+        );
     }
 
     return (
