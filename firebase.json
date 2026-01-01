@@ -1,0 +1,17 @@
+{
+    "hosting": {
+        "site": "crm-activa-2512311714",
+        "public": "apps/crm-client/dist",
+        "ignore": [
+            "firebase.json",
+            "**/.*",
+            "**/node_modules/**"
+        ],
+        "rewrites": [
+            {
+                "source": "**",
+                "destination": "/index.html"
+            }
+        ]
+    }
+}

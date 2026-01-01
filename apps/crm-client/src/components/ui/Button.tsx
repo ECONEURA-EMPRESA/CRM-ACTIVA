@@ -1,0 +1,30 @@
+import React from 'react';
+import { LucideIcon } from 'lucide-react';
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    variant?: "primary" | "secondary" | "ghost" | "danger";
+    size?: "sm" | "md";
+    icon?: LucideIcon;
+    children?: React.ReactNode;
+}
+
+export const Button = ({ children, onClick, variant = "primary", className = "", icon: Icon, size = "md", ...props }: ButtonProps) => {
+    const sizes = { sm: "px-3 py-1.5 text-xs", md: "px-5 py-2.5 text-sm" };
+    const variants = {
+        primary: "btn-primary text-white",
+        secondary: "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-slate-300 hover:shadow-md transition-all",
+        ghost: "text-slate-500 hover:bg-slate-100 hover:text-slate-700",
+        danger: "bg-white text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300"
+    };
+
+    return (
+        <button
+            onClick={onClick}
+            className={`rounded-xl font-bold flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 ${sizes[size]} ${variants[variant]} ${className}`}
+            {...props}
+        >
+            {Icon && <Icon size={size === 'sm' ? 14 : 18} strokeWidth={2.5} />}
+            {children}
+        </button>
+    );
+};
