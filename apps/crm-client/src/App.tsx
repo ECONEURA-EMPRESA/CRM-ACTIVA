@@ -13,7 +13,9 @@ import {
     DollarSign, CreditCard, Plus, PenTool, Trash2, UserX, Hash, UserPlus, CalendarCheck
 } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
+import { LoginView } from './views/LoginView';
+import { Loader2 } from 'lucide-react';
 import { getFirestore } from 'firebase/firestore';
 
 // --- CONFIGURACIÓN FIREBASE ---
@@ -1116,6 +1118,10 @@ const PatientDetail = ({ patient, onBack, onEdit, onEditSession, onNewSession, o
 import { Target } from 'lucide-react';
 
 const App = () => {
+    // AUTH STATE
+    const [user, setUser] = useState(null);
+    const [authLoading, setAuthLoading] = useState(true);
+
     // ESTADO GLOBAL
     const [view, setView] = useState('dashboard');
     const [filter, setFilter] = useState('all');
@@ -1139,6 +1145,15 @@ const App = () => {
     // PERSISTENCIA
     useEffect(() => { localStorage.setItem('patients', JSON.stringify(patients)); }, [patients]);
     useEffect(() => { localStorage.setItem('clinicSettings', JSON.stringify(clinicSettings)); }, [clinicSettings]);
+
+    // AUTH EFFECT
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+            setAuthLoading(false);
+        });
+        return () => unsubscribe();
+    }, []);
 
     // HANDLERS
     const handleSavePatient = (data) => {
@@ -1202,10 +1217,22 @@ const App = () => {
         setModals({ ...modals, session: true });
     };
 
+    if (authLoading) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center bg-slate-50">
+                <Loader2 className="w-10 h-10 text-pink-600 animate-spin" />
+            </div>
+        );
+    }
+
+    if (!user) {
+        return <LoginView />;
+    }
+
     return (
         <div className="flex h-screen bg-slate-50 overflow-hidden font-sans text-slate-900">
             <GlobalStyles />
-            <Sidebar currentView={view} onChangeView={setView} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} onLogout={() => window.location.reload()} />
+            <Sidebar currentView={view} onChangeView={setView} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} onLogout={() => auth.signOut()} />
 
             <main className="flex-1 flex flex-col h-full overflow-hidden relative md:pl-64 transition-all duration-300">
                 {/* TOP BAR MOBILE */}
