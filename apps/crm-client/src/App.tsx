@@ -1121,6 +1121,7 @@ const App = () => {
     // AUTH STATE
     const [user, setUser] = useState(null);
     const [authLoading, setAuthLoading] = useState(true);
+    const [demoMode, setDemoMode] = useState(false);
 
     // ESTADO GLOBAL
     const [view, setView] = useState('dashboard');
@@ -1225,8 +1226,8 @@ const App = () => {
         );
     }
 
-    if (!user) {
-        return <LoginView />;
+    if (!user && !demoMode) {
+        return <LoginView onDemoLogin={() => setDemoMode(true)} />;
     }
 
     return (

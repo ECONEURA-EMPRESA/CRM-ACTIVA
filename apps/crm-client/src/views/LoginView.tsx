@@ -4,7 +4,7 @@ import { auth } from '../lib/firebase';
 import { Button } from '../components/ui/Button';
 import { Lock, Mail, ArrowRight, Music, AlertCircle, Loader2 } from 'lucide-react';
 
-export const LoginView = () => {
+export const LoginView = ({ onDemoLogin }: { onDemoLogin: () => void }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -132,6 +132,20 @@ export const LoginView = () => {
                             className={`w-full flex justify-center items-center gap-2 py-4 px-6 border border-transparent rounded-xl text-sm font-bold text-white bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 shadow-lg shadow-pink-500/30 transition-all transform hover:-translate-y-0.5 ${loading ? 'opacity-80 cursor-wait' : ''}`}
                         >
                             {loading ? <Loader2 className="animate-spin" /> : <>Ingresar al Sistema <ArrowRight size={18} /></>}
+                        </button>
+
+                        <div className="relative my-6">
+                            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200"></div></div>
+                            <div className="relative flex justify-center text-sm"><span className="px-2 bg-white text-slate-500">O continúe como</span></div>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={onDemoLogin}
+                            className="w-full py-3 px-6 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 bg-white hover:bg-slate-50 hover:text-slate-900 transition-all flex items-center justify-center gap-2"
+                        >
+                            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Acceso Demo / Invitado
                         </button>
                     </form>
 
