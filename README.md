@@ -1,69 +1,87 @@
-# Método Activa SaaS Platform
+<div align="center">
+  <img src="docs/assets/logo.png" alt="Método Activa Logo" width="120" />
+  <h1>MÉTODO ACTIVA SAAS</h1>
+  <p><strong>The Sovereign Clinical Operating System for Neuro-Cognitive Excellence.</strong></p>
 
-> **Clinical Excellence meets Modern Tech.**
-> A sovereign, HIPAA-compliant CRM for detailed neuro-cognitive tracking and clinical management.
+  [![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
+  [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
+  [![Stack](https://img.shields.io/badge/Stack-React%20%7C%20Firebase%20%7C%20GCP-blue.svg)]()
+</div>
 
-![Dashboard Preview](https://metodo-activa-saas-1767353295.web.app/assets/logo-circular-Cj9w12.png) <!-- Conceptual link, replace with real screenshot -->
+<br />
 
-## 🚀 Quick Start (Zero to Hero)
+![Platform Preview](docs/assets/login-preview.png)
 
-This repository is optimized for **Google Cloud Platform (GCP)**.
+---
+
+## 🏥 The Vision
+**Método Activa SaaS** is not just a CRM; it's a **comprehensive clinical ecosystem** designed for high-performance neuro-cognitive centers. Unlike generic solutions, this platform is engineered to handle complex patient tracking, group therapy dynamics, and precise invoice generation with **zero administrative friction**.
+
+It is built on a **Sovereign Architecture**: You own the data, you own the infrastructure. No vendor lock-in.
+
+## ✨ Key Features
+
+| Feature | Description |
+| :--- | :--- |
+| **🧠 Deep Clinical Tracking** | Record detailed cognitive benchmarks, therapy progress, and patient history in a unified timeline. |
+| **👥 Group Session Engine** | Manage multi-patient sessions effortlessly. ideal for group cognitive workshops. |
+| **💳 Smart Billing** | Automated invoicing system linked directly to session attendance. One-click export to PDF. |
+| **🔐 HIPAA-Ready Security** | Built on Google Identity Platform. End-to-end encryption for sensitive medical data. |
+| **⚡ "Metallic Light" UI** | A premium, distraction-free interface designed for clinicians who spend 8+ hours a day on screen. |
+
+---
+
+## 🏗️ Enterprise Architecture
+
+Built for **Infinite Scalability** using Google Cloud Serverless technology.
+
+```mermaid
+graph TD
+    User[Clients / Doctors] -->|SSL Encrypted| CDN[Firebase Global Edge]
+    CDN -->|Powering| SPA[React High-Performance Client]
+    
+    subgraph "Secure Cloud Core (GCP)"
+        SPA -->|Auth (JWT)| ID[Identity Platform]
+        SPA -->|Live Data| Firestore[NoSQL Document Store]
+        SPA -->|Business Logic| API[Cloud Run Serverless API]
+        
+        API -->|Admin Access| Firestore
+        API -->|Storage| Buckets[Private Cloud Storage]
+    end
+```
+
+---
+
+## 🚀 Technical Quick Start
+
+Ready to deploy your own instance?
 
 ### Prerequisites
 - Node.js v20+
-- pnpm v8+ (`npm install -g pnpm`)
-- Google Cloud CLI (`gcloud`)
+- Google Cloud CLI
 
-### 1. Install & Initialize
+### 1. Installation
 ```bash
-# Install dependencies across all packages
+# Install dependencies
 pnpm install
 
-# Start the Development Environment (Frontend + Backend)
+# Start Local Clinical Environment
 pnpm run dev
 ```
-Client runs on `http://localhost:5173`. Backend on `http://localhost:8080`.
 
-### 2. Deployment
+### 2. Production Deployment
 ```bash
-# Build production artifacts
+# Compile optimized artifacts
 pnpm run build
 
-# Deploy to Firebase Hosting and Cloud Run
+# Deploy to Global CDN
 firebase deploy
 ```
 
 ---
 
-## 🏛️ System Architecture
+## 🔒 License & Rights
+**Copyright © 2026 Método Activa SaaS.** All Rights Reserved.
+This software is **Proprietary**. Unauthorised copying, modification, distribution, or use is strictly prohibited.
 
-| Component | Technology | Description |
-| :--- | :--- | :--- |
-| **Frontend** | React 18 + Vite | High-performance SPA with "Metallic Light v5" design system. |
-| **Backend** | Node.js + Express | Lightweight API Gateway running on Cloud Run (Serverless). |
-| **Database** | Firestore | NoSQL document store with real-time capabilities. |
-| **Auth** | Identity Platform | Enterprise-grade security (Email/Password + Google). |
-| **Monorepo** | TurboRepo | Efficient build system caching. |
-
-This architecture is designed for **Zero Maintenance** and **Infinite Scalability** via GCP Serverless.
-
----
-
-## 📂 Project Structure
-
-```
-monorepo-crm-activa/
-├── apps/
-│   ├── crm-client/       # The Application (React)
-│   └── backend-api/      # The API (Express)
-├── docs/                 # Technical & Legal Documentation
-├── infra/                # Terraform & Infrastructure as Code
-└── scripts/              # Utility scripts
-```
-
-## 🔒 Security Notice
-This is **Proprietary Software**. Access to source code does not grant usage rights. See `LICENSE` for details.
-Api Keys are injected at build time. Never commit `.env.production`.
-
----
-**© 2026 Método Activa SaaS**
+> *Empowering Clinicians. Restoring Minds.*
