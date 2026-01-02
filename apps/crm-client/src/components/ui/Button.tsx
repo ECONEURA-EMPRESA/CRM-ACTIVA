@@ -1,14 +1,23 @@
-import React from 'react';
+
+import React, { ButtonHTMLAttributes } from 'react';
 import { LucideIcon } from 'lucide-react';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: "primary" | "secondary" | "ghost" | "danger";
-    size?: "sm" | "md";
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+    variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+    size?: 'sm' | 'md';
     icon?: LucideIcon;
-    children?: React.ReactNode;
+    children: React.ReactNode;
 }
 
-export const Button = ({ children, onClick, variant = "primary", className = "", icon: Icon, size = "md", ...props }: ButtonProps) => {
+export const Button: React.FC<ButtonProps> = ({
+    children,
+    onClick,
+    variant = "primary",
+    className = "",
+    icon: Icon,
+    size = "md",
+    ...props
+}) => {
     const sizes = { sm: "px-3 py-1.5 text-xs", md: "px-5 py-2.5 text-sm" };
     const variants = {
         primary: "btn-primary text-white",

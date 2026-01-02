@@ -3,7 +3,20 @@ dist
 build
 .env
 .env.local
-!.env.production
+.env.production
 .turbo
 gcp-sa-key.json
 .pnpm-store
+
+# Logs
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup

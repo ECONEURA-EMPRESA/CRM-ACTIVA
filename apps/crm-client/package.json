@@ -9,11 +9,14 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@types/styled-components": "^5.1.36",
+        "date-fns": "^4.1.0",
+        "firebase": "^12.7.0",
+        "lucide-react": "^0.562.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "lucide-react": "latest",
-        "firebase": "latest",
-        "date-fns": "latest"
+        "react-to-print": "^3.2.0",
+        "styled-components": "^6.1.19"
     },
     "devDependencies": {
         "@types/react": "^18.2.66",

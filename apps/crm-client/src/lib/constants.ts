@@ -27,6 +27,67 @@ export const COMMON_PATHOLOGIES = [
     { label: "Otras...", value: "other" }
 ];
 
+export const FORMULATION_OPTIONS = {
+    synthesis: [
+        "Deterioro Cognitivo Leve", "EA (Alzheimer)", "Demencia Vascular", "Demencia Mixta",
+        "Cuerpos de Lewy / Parkinson", "GDS 3 (Deterioro Leve)", "GDS 4 (Moderado)",
+        "GDS 5 (Moderado-Grave)", "GDS 6 (Grave)", "GDS 7 (Muy Grave)", "Sin Deterioro Cognitivo"
+    ],
+    preserved: [
+        "Memoria Musical Emocional", "Ritmo Básico / Sincronización", "Canto / Tarareo",
+        "Reconocimiento Melodías", "Conexión Emocional Sonora", "Lectoescritura Musical",
+        "Atención Sostenida (Tarea Musical)", "Preferencia Estética", "Movimiento asociado"
+    ],
+    difficulties: [
+        "Desorientación T-E", "Afasia / Anomia", "Apraxia", "Agnosia",
+        "Apatía / Abulia", "Agitación / Agresividad", "Ansiedad / Depresión",
+        "Aislamiento Social", "Deambulación Errática", "Déficit Atencional"
+    ],
+    hypothesis: [
+        "Música como Anclaje (Seguridad)", "Estimulación Cognitiva (Reminiscencia)",
+        "Regulación Conductual (Ritmo)", "Facilitación Comunicación Verbal",
+        "Expresión Emocional (ISO)", "Identidad Sonora", "Socialización / Pertenencia"
+    ]
+};
+
+export const MOCA_SECTIONS = [
+    { id: 'visuo', label: 'Visuoespacial / Ejecutiva', max: 5 },
+    { id: 'naming', label: 'Identificación', max: 3 },
+    { id: 'attention', label: 'Atención', max: 6 },
+    { id: 'language', label: 'Lenguaje', max: 3 },
+    { id: 'abstraction', label: 'Abstracción', max: 2 },
+    { id: 'recall', label: 'Recuerdo Diferido', max: 5 },
+    { id: 'orientation', label: 'Orientación', max: 6 }
+];
+
+export const MMSE_SECTIONS = [
+    { id: 'time', label: 'Orientación Temporal', max: 5 },
+    { id: 'place', label: 'Orientación Espacial', max: 5 },
+    { id: 'registration', label: 'Fijación', max: 3 },
+    { id: 'attention', label: 'Atención / Cálculo', max: 5 },
+    { id: 'recall', label: 'Recuerdo Diferido', max: 3 },
+    { id: 'language', label: 'Lenguaje y Construcción', max: 9 }
+];
+
+export const ADMISSION_CHECKS = {
+    safety: [
+        "Crisis epilépticas recientes / no controladas",
+        "Hipersensibilidad auditiva severa",
+        "Agitación psicomotriz aguda",
+        "Riesgo de fuga / Deambulación errática",
+        "Alergias graves conocidas",
+        "Dificultades severas de deglución"
+    ],
+    prep: [
+        "Historia clínica revisada",
+        "Entrevista con familiares/cuidador realizada",
+        "Preferencias musicales (ISO) identificadas",
+        "Espacio físico preparado (luz, ruido, sillas)",
+        "Instrumentos seleccionados y afinados",
+        "Objetivos iniciales definidos"
+    ]
+};
+
 export const CLINICAL_GUIDES: Record<string, any> = {
     dementia: { title: "Deterioro Cognitivo", objectives: ["Estimular funciones cognitivas", "Favorecer orientación", "Reducir ansiedad/agitación"], techniques: ["Canciones autobiográficas", "Ritmos predecibles"], precautions: ["Evitar sobreestimulación", "Controlar duración"], focus: "Estimulación Cognitiva" },
     mood: { title: "Trastornos del Ánimo", objectives: ["Facilitar expresión", "Regular activación", "Reforzar autoestima"], techniques: ["Improvisación guiada", "Canciones emocionales"], precautions: ["Respetar silencios", "Contención emocional"], focus: "Regulación Emocional" },
@@ -35,32 +96,12 @@ export const CLINICAL_GUIDES: Record<string, any> = {
 };
 
 export const SESSION_ACTIVITIES = [
-    { id: "welcome", label: "Bienvenida / Dinámica Inicial", placeholder: "Canción de saludo, sintonización..." },
-    { id: "improv", label: "Improvisación Instrumental", placeholder: "Instrumentos usados, consigna..." },
-    { id: "singing", label: "Canto / Trabajo Vocal", placeholder: "Canciones cantadas, tonalidad..." },
-    { id: "listening", label: "Audición Musical", placeholder: "Obras escuchadas, reacción..." },
-    { id: "movement", label: "Movimiento / Corporal", placeholder: "Tipo de movimiento, uso del espacio..." },
-    { id: "composition", label: "Composición", placeholder: "Songwriting, análisis de letra..." },
-    { id: "relaxation", label: "Relajación", placeholder: "Técnica usada, música de fondo..." },
-    { id: "closing", label: "Cierre / Despedida", placeholder: "Ritual de salida, feedback..." }
-];
-
-// Dummy Data
-export const INITIAL_PATIENTS = [
-    {
-        id: 1, name: "Antonio García", age: 74, diagnosis: "Alzheimer y otras Demencias", pathologyType: 'dementia', photo: "AG", joinedDate: "2023-09-15", sessionsCompleted: 7,
-        initialEval: [1, 1, 1, 2, 1, 2, 1, 2, 0], currentEval: [2, 1, 2, 3, 2, 2, 2, 3, 1],
-        reference: "AG-091523",
-        cognitiveScores: { moca: "18/30", mmse: "21/30", gds: "4", date: "20/10/2023" },
-        clinicalFormulation: {
-            synthesis: "Paciente con deterioro cognitivo moderado (GDS 4). Conserva memoria musical biográfica.",
-            preserved: "Atención musical, ritmo básico, memoria emotiva.",
-            difficulties: "Desorientación temporal, afasia nominal, inicio de apraxia.",
-            regulators: "Calma: Voz cantada suave, canciones de infancia. Estrés: Ruido fuerte, cambios bruscos.",
-            hypothesis: "La música actúa como 'anclaje' de seguridad y estimulación cognitiva."
-        },
-        sessions: [{ id: 101, date: "20/10/2023", phase: 2, activityDetails: { singing: "Canto 'El Emigrante'." }, notes: "Buena respuesta.", scores: [2, 1, 2, 3, 2, 2, 2, 3, 1], type: "individual", price: 50, paid: false, isAbsent: false }]
-    },
-    { id: 2, name: "Lucía M.", age: 8, diagnosis: "TEA", pathologyType: 'neuro', photo: "LM", joinedDate: "2024-01-10", initialEval: [1, 2, 0, 1, 1, 1, 0, 2, 1], currentEval: [1, 2, 1, 1, 1, 1, 1, 2, 1], cognitiveScores: { moca: "-", mmse: "-", gds: "-", date: "-" }, reference: "LM-011024", clinicalFormulation: {}, sessions: [] },
-    { id: 3, name: "Marc R.", age: 15, diagnosis: "Ansiedad y Estrés", pathologyType: 'mood', photo: "MR", joinedDate: "2023-11-05", initialEval: [2, 3, 1, 1, 2, 2, 1, 3, 2], currentEval: [3, 3, 2, 2, 3, 2, 2, 3, 3], cognitiveScores: { moca: "30/30", mmse: "-", gds: "-", date: "05/11/2023" }, reference: "MR-110523", clinicalFormulation: {}, sessions: [] }
+    { id: "welcome", label: "Bienvenida / Dinámica Inicial", placeholder: "Canción de saludo..." },
+    { id: "improv", label: "Improvisación Instrumental", placeholder: "Instrumentos usados..." },
+    { id: "singing", label: "Canto / Trabajo Vocal", placeholder: "Canciones cantadas..." },
+    { id: "listening", label: "Audición Musical", placeholder: "Obras escuchadas..." },
+    { id: "movement", label: "Movimiento / Corporal", placeholder: "Tipo de movimiento..." },
+    { id: "composition", label: "Composición", placeholder: "Songwriting..." },
+    { id: "relaxation", label: "Relajación", placeholder: "Técnica usada..." },
+    { id: "closing", label: "Cierre / Despedida", placeholder: "Feedback..." }
 ];

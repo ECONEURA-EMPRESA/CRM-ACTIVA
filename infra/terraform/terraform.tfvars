@@ -1,2 +1,2 @@
-project_id = "crm-activa-2512311714"
-region     = "europe-west1"
+project_id = "metodo-activa-saas-1767353295"
+region = "europe-west1"

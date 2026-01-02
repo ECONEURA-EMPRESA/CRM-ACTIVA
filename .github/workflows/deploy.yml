@@ -41,6 +41,7 @@ jobs:
           docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPO }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
 
       - name: Deploy to Cloud Run
+        id: deploy-backend
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: ${{ env.SERVICE_NAME }}
@@ -64,6 +65,8 @@ jobs:
 
       - name: Build Frontend
         run: pnpm turbo run build --filter=crm-client
+        env:
+          VITE_API_URL: ${{ steps.deploy-backend.outputs.url }}
         
       - name: Deploy Frontend to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0

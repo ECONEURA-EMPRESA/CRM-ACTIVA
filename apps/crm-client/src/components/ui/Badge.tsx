@@ -1,13 +1,12 @@
-import React from 'react';
 
-type BadgeVariant = "neutral" | "brand" | "success" | "group" | "warning" | "error";
+import React from 'react';
 
 interface BadgeProps {
     children: React.ReactNode;
-    variant?: BadgeVariant;
+    variant?: 'neutral' | 'brand' | 'success' | 'group' | 'warning' | 'error';
 }
 
-export const Badge = ({ children, variant = "neutral" }: BadgeProps) => {
+export const Badge: React.FC<BadgeProps> = ({ children, variant = "neutral" }) => {
     const c = {
         neutral: "bg-slate-100 text-slate-600 border-slate-200",
         brand: "bg-pink-50 text-pink-700 border-pink-100",

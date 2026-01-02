@@ -1,11 +1,10 @@
-/// <reference types="vite/client" />
+
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 // --- CONFIGURACIÓN FIREBASE ---
-// Production: Use environment variables
-// Dev/Fallback: Keep empty object or mock if needed for local dev without env
+// En entorno Vite usamos import.meta.env
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -18,4 +17,3 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export default app;
