@@ -3,6 +3,11 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import { AuthProvider } from './context/AuthContext'
 import './index.css'
+// @ts-ignore
+import { registerSW } from 'virtual:pwa-register'
+
+// Auto-update PWA
+registerSW({ immediate: true })
 
 import { BrowserRouter } from 'react-router-dom'
 

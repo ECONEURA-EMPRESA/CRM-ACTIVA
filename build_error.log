@@ -1,0 +1,59 @@
+• turbo 2.7.2
+• Packages in scope: crm-client
+• Running build in 1 packages
+• Remote caching disabled
+@monorepo/shared:build: cache hit, replaying logs 34f2edd6f330d849
+@monorepo/shared:build: 
+@monorepo/shared:build: > @monorepo/shared@1.0.0 build C:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa\packages\shared
+@monorepo/shared:build: > tsup src/index.ts --format cjs,esm --dts
+@monorepo/shared:build: 
+@monorepo/shared:build: [34mCLI[39m Building entry: src/index.ts
+@monorepo/shared:build: [34mCLI[39m Using tsconfig: tsconfig.json
+@monorepo/shared:build: [34mCLI[39m tsup v8.5.1
+@monorepo/shared:build: [34mCLI[39m Target: node16
+@monorepo/shared:build: [34mCJS[39m Build start
+@monorepo/shared:build: [34mESM[39m Build start
+@monorepo/shared:build: [32mCJS[39m [1mdist\index.js [22m[32m1.76 KB[39m
+@monorepo/shared:build: [32mCJS[39m ⚡️ Build success in 89ms
+@monorepo/shared:build: [32mESM[39m [1mdist\index.mjs [22m[32m642.00 B[39m
+@monorepo/shared:build: [32mESM[39m ⚡️ Build success in 89ms
+@monorepo/shared:build: [34mDTS[39m Build start
+@monorepo/shared:build: [32mDTS[39m ⚡️ Build success in 2609ms
+@monorepo/shared:build: [32mDTS[39m [1mdist\index.d.ts  [22m[32m1.08 KB[39m
+@monorepo/shared:build: [32mDTS[39m [1mdist\index.d.mts [22m[32m1.08 KB[39m
+crm-client:build: cache miss, executing 87f11820a865d0c2
+crm-client:build: 
+crm-client:build: > crm-client@0.0.0 build C:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa\apps\crm-client
+crm-client:build: > tsc && vite build
+crm-client:build: 
+crm-client:build: [36mvite v5.4.21 [32mbuilding for production...[36m[39m
+crm-client:build: transforming...
+crm-client:build: [32m✓[39m 6 modules transformed.
+crm-client:build: [31mx[39m Build failed in 1.26s
+crm-client:build: [31merror during build:
+crm-client:build: [31m[vite-plugin-pwa:build] [plugin vite-plugin-pwa:build] There was an error during the build:
+crm-client:build:   [vite]: Rollup failed to resolve import "workbox-window" from "/@vite-plugin-pwa/virtual:pwa-register".
+crm-client:build: This is most likely unintended because it can break your application at runtime.
+crm-client:build: If you do want to externalize this module explicitly add it to
+crm-client:build: `build.rollupOptions.external`
+crm-client:build: Additionally, handling the error in the 'buildEnd' hook caused the following error:
+crm-client:build:   [vite]: Rollup failed to resolve import "workbox-window" from "/@vite-plugin-pwa/virtual:pwa-register".
+crm-client:build: This is most likely unintended because it can break your application at runtime.
+crm-client:build: If you do want to externalize this module explicitly add it to
+crm-client:build: `build.rollupOptions.external`[31m
+crm-client:build:     at getRollupError (file:///C:/Users/Usuario/.gemini/antigravity/scratch/monorepo-crm-activa/node_modules/.pnpm/rollup@4.54.0/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+crm-client:build:     at file:///C:/Users/Usuario/.gemini/antigravity/scratch/monorepo-crm-activa/node_modules/.pnpm/rollup@4.54.0/node_modules/rollup/dist/es/shared/node-entry.js:23418:39
+crm-client:build:     at async catchUnfinishedHookActions (file:///C:/Users/Usuario/.gemini/antigravity/scratch/monorepo-crm-activa/node_modules/.pnpm/rollup@4.54.0/node_modules/rollup/dist/es/shared/node-entry.js:22876:16)
+crm-client:build:     at async rollupInternal (file:///C:/Users/Usuario/.gemini/antigravity/scratch/monorepo-crm-activa/node_modules/.pnpm/rollup@4.54.0/node_modules/rollup/dist/es/shared/node-entry.js:23401:5)
+crm-client:build:     at async build (file:///C:/Users/Usuario/.gemini/antigravity/scratch/monorepo-crm-activa/node_modules/.pnpm/vite@5.4.21/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:65709:14)
+crm-client:build:     at async CAC.<anonymous> (file:///C:/Users/Usuario/.gemini/antigravity/scratch/monorepo-crm-activa/node_modules/.pnpm/vite@5.4.21/node_modules/vite/dist/node/cli.js:829:5)[39m
+crm-client:build:  ELIFECYCLE  Command failed with exit code 1.
+crm-client:build: ERROR: command finished with error: command (C:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa\apps\crm-client) C:\Users\Usuario\AppData\Roaming\npm\pnpm.cmd run build exited (1)
+crm-client#build: command (C:\Users\Usuario\.gemini\antigravity\scratch\monorepo-crm-activa\apps\crm-client) C:\Users\Usuario\AppData\Roaming\npm\pnpm.cmd run build exited (1)
+
+ Tasks:    1 successful, 2 total
+Cached:    1 cached, 2 total
+  Time:    8.741s 
+Failed:    crm-client#build
+
+ ERROR  run failed: command  exited (1)

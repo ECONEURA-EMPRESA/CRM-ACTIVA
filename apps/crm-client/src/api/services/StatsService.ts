@@ -1,5 +1,5 @@
 import { getAuth } from "firebase/auth";
-import { app } from "../../config/firebase";
+import { app } from "../../lib/firebase";
 
 const API_URL = import.meta.env.VITE_API_URL || "https://metodo-activa-saas-1767353295.web.app/api";
 
