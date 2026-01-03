@@ -5,32 +5,42 @@ import { Patient } from '../../../lib/types';
 import logoCircular from '../../../assets/logo-circular.png';
 
 interface ReportModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    patient: Patient;
-    clinicSettings: any;
+  isOpen: boolean;
+  onClose: () => void;
+  patient: Patient;
+  clinicSettings: any;
 }
 
-export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, patient, clinicSettings }) => {
-    const [reportText, setReportText] = useState('');
-    const [isGenerating, setIsGenerating] = useState(true);
+export const ReportModal: React.FC<ReportModalProps> = ({
+  isOpen,
+  onClose,
+  patient,
+  clinicSettings,
+}) => {
+  const [reportText, setReportText] = useState('');
+  const [isGenerating, setIsGenerating] = useState(true);
 
-    // Smart Template Logic
-    useEffect(() => {
-        if (isOpen) {
-            const generateDraft = () => {
-                const today = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-                const sessionsCount = patient.sessions?.filter(s => !s.isAbsent).length || 0;
+  // Smart Template Logic
+  useEffect(() => {
+    if (isOpen) {
+      const generateDraft = () => {
+        const today = new Date().toLocaleDateString('es-ES', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        });
+        const sessionsCount = patient.sessions?.filter((s) => !s.isAbsent).length || 0;
 
-                const lastEval = patient.cognitiveScores || {};
-                const mocaScore = lastEval.moca || "Pendiente";
-                const gdsScore = lastEval.gds || "No registrado";
+        const lastEval = patient.cognitiveScores || {};
+        const mocaScore = lastEval.moca || 'Pendiente';
+        const gdsScore = lastEval.gds || 'No registrado';
 
-                const synthesisText = typeof patient.clinicalFormulation?.synthesis === 'string'
-                    ? patient.clinicalFormulation.synthesis
-                    : patient.clinicalFormulation?.synthesis?.text;
+        const synthesisText =
+          typeof patient.clinicalFormulation?.synthesis === 'string'
+            ? patient.clinicalFormulation.synthesis
+            : patient.clinicalFormulation?.synthesis?.text;
 
-                const draft = `INFORME CLÍNICO DE MUSICOTERAPIA
+        const draft = `INFORME CLÍNICO DE MUSICOTERAPIA
 Fecha de emisión: ${today}
 
 1. DATOS DE FILIACIÓN
@@ -49,7 +59,7 @@ En la última valoración psicométrica realizada, se obtuvieron los siguientes 
 - Escala GDS (Reisberg): Estadio ${gdsScore}
 
 Observaciones cualitativas:
-${synthesisText || "No se han registrado observaciones específicas en la síntesis diagnóstica."}
+${synthesisText || 'No se han registrado observaciones específicas en la síntesis diagnóstica.'}
 
 4. OBJETIVOS TRABAJADOS
 - Estimulación de la memoria autobiográfica a través de la reminiscencia musical.
@@ -61,22 +71,22 @@ Se observa una respuesta favorable a la intervención musical... [Espacio para q
 
 Se recomienda la continuidad del tratamiento con una frecuencia de...`;
 
-                setReportText(draft);
-                setIsGenerating(false);
-            };
+        setReportText(draft);
+        setIsGenerating(false);
+      };
 
-            // Simulate "Thinking" time for the "AI" feel mentioned in manual
-            setTimeout(generateDraft, 800);
-        }
-    }, [isOpen, patient]);
+      // Simulate "Thinking" time for the "AI" feel mentioned in manual
+      setTimeout(generateDraft, 800);
+    }
+  }, [isOpen, patient]);
 
-    if (!isOpen) return null;
+  if (!isOpen) return null;
 
-    const handlePrint = () => {
-        const printWindow = window.open('', '', 'height=600,width=800');
-        if (!printWindow) return;
+  const handlePrint = () => {
+    const printWindow = window.open('', '', 'height=600,width=800');
+    if (!printWindow) return;
 
-        printWindow.document.write(`
+    printWindow.document.write(`
             <html>
                 <head>
                     <title>Informe ${patient.name}</title>
@@ -121,75 +131,91 @@ Se recomienda la continuidad del tratamiento con una frecuencia de...`;
                 </body>
             </html>
         `);
-        printWindow.document.close();
-        printWindow.focus();
-        setTimeout(() => printWindow.print(), 500);
-    };
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => printWindow.print(), 500);
+  };
 
-    return (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl h-[85vh] flex flex-col animate-in fade-in zoom-in-95">
-                <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                    <div>
-                        <h2 className="text-xl font-black text-slate-800 flex items-center gap-3">
-                            <FileText className="text-pink-600" /> Generador de Informe Clínico
-                        </h2>
-                        <p className="text-sm text-slate-500">Asistente de redacción inteligente v5.0</p>
-                    </div>
-                    <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-full transition-colors"><X size={20} /></button>
-                </div>
-
-                <div className="flex-1 flex flex-col md:flex-row h-full overflow-hidden">
-                    {/* Left Panel: Context & Template */}
-                    <div className="w-full md:w-1/3 bg-slate-50 border-r border-slate-200 p-6 overflow-y-auto hidden md:block">
-                        <div className="bg-pink-50 border border-pink-100 rounded-xl p-4 mb-6">
-                            <h4 className="font-bold text-pink-700 text-sm mb-2 flex items-center gap-2">
-                                <Wand2 size={16} /> Smart Template Activo
-                            </h4>
-                            <p className="text-xs text-pink-600 leading-relaxed">
-                                El sistema ha detectado {patient.sessions?.length || 0} sesiones y una evaluación reciente.
-                                Se ha generado un borrador basado en la fase "{patient.pathologyType}" del paciente.
-                            </p>
-                        </div>
-
-                        <h4 className="font-bold text-slate-700 text-sm mb-3 uppercase tracking-wider">Variables Inyectadas</h4>
-                        <div className="space-y-2">
-                            <div className="flex justify-between items-center text-xs p-2 bg-white rounded border border-slate-200">
-                                <span className="text-slate-500">Paciente</span>
-                                <span className="font-bold text-slate-800">{patient.name}</span>
-                            </div>
-                            <div className="flex justify-between items-center text-xs p-2 bg-white rounded border border-slate-200">
-                                <span className="text-slate-500">Edad</span>
-                                <span className="font-bold text-slate-800">{patient.age}</span>
-                            </div>
-                            <div className="flex justify-between items-center text-xs p-2 bg-white rounded border border-slate-200">
-                                <span className="text-slate-500">MOCA</span>
-                                <span className="font-bold text-slate-800">{patient.cognitiveScores?.moca || '-'}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Right Panel: Editor */}
-                    <div className="flex-1 flex flex-col relative">
-                        {isGenerating && (
-                            <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center flex-col gap-3">
-                                <Wand2 className="animate-spin text-pink-500" size={32} />
-                                <span className="text-sm font-bold text-slate-500">Redactando borrador clínico...</span>
-                            </div>
-                        )}
-                        <textarea
-                            className="flex-1 p-8 resize-none focus:outline-none font-serif text-slate-800 leading-relaxed"
-                            value={reportText}
-                            onChange={(e) => setReportText(e.target.value)}
-                        />
-                    </div>
-                </div>
-
-                <div className="p-4 border-t border-slate-100 bg-white flex justify-end gap-3">
-                    <Button variant="secondary" onClick={onClose}>Cancelar</Button>
-                    <Button onClick={handlePrint} icon={Printer}>Imprimir / Guardar PDF</Button>
-                </div>
-            </div>
+  return (
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl h-[85vh] flex flex-col animate-in fade-in zoom-in-95">
+        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+          <div>
+            <h2 className="text-xl font-black text-slate-800 flex items-center gap-3">
+              <FileText className="text-pink-600" /> Generador de Informe Clínico
+            </h2>
+            <p className="text-sm text-slate-500">Asistente de redacción inteligente v5.0</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-slate-200 rounded-full transition-colors"
+          >
+            <X size={20} />
+          </button>
         </div>
-    );
+
+        <div className="flex-1 flex flex-col md:flex-row h-full overflow-hidden">
+          {/* Left Panel: Context & Template */}
+          <div className="w-full md:w-1/3 bg-slate-50 border-r border-slate-200 p-6 overflow-y-auto hidden md:block">
+            <div className="bg-pink-50 border border-pink-100 rounded-xl p-4 mb-6">
+              <h4 className="font-bold text-pink-700 text-sm mb-2 flex items-center gap-2">
+                <Wand2 size={16} /> Smart Template Activo
+              </h4>
+              <p className="text-xs text-pink-600 leading-relaxed">
+                El sistema ha detectado {patient.sessions?.length || 0} sesiones y una evaluación
+                reciente. Se ha generado un borrador basado en la fase "{patient.pathologyType}" del
+                paciente.
+              </p>
+            </div>
+
+            <h4 className="font-bold text-slate-700 text-sm mb-3 uppercase tracking-wider">
+              Variables Inyectadas
+            </h4>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-xs p-2 bg-white rounded border border-slate-200">
+                <span className="text-slate-500">Paciente</span>
+                <span className="font-bold text-slate-800">{patient.name}</span>
+              </div>
+              <div className="flex justify-between items-center text-xs p-2 bg-white rounded border border-slate-200">
+                <span className="text-slate-500">Edad</span>
+                <span className="font-bold text-slate-800">{patient.age}</span>
+              </div>
+              <div className="flex justify-between items-center text-xs p-2 bg-white rounded border border-slate-200">
+                <span className="text-slate-500">MOCA</span>
+                <span className="font-bold text-slate-800">
+                  {patient.cognitiveScores?.moca || '-'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Panel: Editor */}
+          <div className="flex-1 flex flex-col relative">
+            {isGenerating && (
+              <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center flex-col gap-3">
+                <Wand2 className="animate-spin text-pink-500" size={32} />
+                <span className="text-sm font-bold text-slate-500">
+                  Redactando borrador clínico...
+                </span>
+              </div>
+            )}
+            <textarea
+              className="flex-1 p-8 resize-none focus:outline-none font-serif text-slate-800 leading-relaxed"
+              value={reportText}
+              onChange={(e) => setReportText(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="p-4 border-t border-slate-100 bg-white flex justify-end gap-3">
+          <Button variant="secondary" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button onClick={handlePrint} icon={Printer}>
+            Imprimir / Guardar PDF
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
 };

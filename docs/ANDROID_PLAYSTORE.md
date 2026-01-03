@@ -3,6 +3,7 @@
 Para subir tu CRM a la Play Store, no necesitas reescribir el código. Usaremos **TWAs (Trusted Web Activities)**.
 
 ### Paso 1: Generar el archivo .APK / .AAB
+
 1.  Ve a **[PWABuilder.com](https://www.pwabuilder.com)**.
 2.  Introduce la URL de tu app: `https://metodo-activa-saas-1767353295.web.app`
 3.  Pulsa **Start**.
@@ -11,10 +12,12 @@ Para subir tu CRM a la Play Store, no necesitas reescribir el código. Usaremos 
 6.  Descarga el paquete que te generan.
 
 ### Paso 2: Crear cuenta de Desarrollador
+
 1.  Ve a **[Google Play Console](https://play.google.com/console)**.
 2.  Paga la tasa única de registro ($25 USD).
 
 ### Paso 3: Subir la App
+
 1.  Crea una **Nueva App**.
 2.  Sube el archivo `.aab` (Android App Bundle) que descargaste en el paso 1.
 3.  Rellena la ficha (Nombre, Descripción, Iconos, Capturas de pantalla).

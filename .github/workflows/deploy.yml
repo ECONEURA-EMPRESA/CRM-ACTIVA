@@ -67,7 +67,7 @@ jobs:
         run: pnpm turbo run build --filter=crm-client
         env:
           VITE_API_URL: ${{ steps.deploy-backend.outputs.url }}
-        
+
       - name: Deploy Frontend to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:

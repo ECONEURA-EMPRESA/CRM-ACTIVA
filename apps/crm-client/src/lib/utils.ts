@@ -1,42 +1,43 @@
-
 import { ClinicSettings, Patient, Session, InvoiceData } from './types';
 
 export const formatDateForInput = (dateStr?: string): string => {
-    if (!dateStr) return new Date().toISOString().split('T')[0];
-    const parts = dateStr.split('/');
-    if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
-    return dateStr;
+  if (!dateStr) return new Date().toISOString().split('T')[0];
+  const parts = dateStr.split('/');
+  if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
+  return dateStr;
 };
 
 export const formatDateForDisplay = (isoDate?: string): string => {
-    if (!isoDate) return new Date().toLocaleDateString('es-ES');
-    const [year, month, day] = isoDate.split('-');
-    return `${day}/${month}/${year}`;
+  if (!isoDate) return new Date().toLocaleDateString('es-ES');
+  const [year, month, day] = isoDate.split('-');
+  return `${day}/${month}/${year}`;
 };
 
 export const parseDate = (str?: string): Date => {
-    if (!str) return new Date();
-    const parts = str.split('/');
-    // Asumiendo formato DD/MM/YYYY
-    if (parts.length === 3) {
-        return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-    }
-    return new Date();
+  if (!str) return new Date();
+  const parts = str.split('/');
+  // Asumiendo formato DD/MM/YYYY
+  if (parts.length === 3) {
+    return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+  }
+  return new Date();
 };
 
 export const printConsent = (clinicData: ClinicSettings, patientData: Partial<Patient>) => {
-    alert(`Generando Documento de Consentimiento Informado para:\nPaciente: ${patientData.name}\nRef: ${patientData.reference || 'S/R'}\nEdad: ${patientData.age}\n\nCentro: ${clinicData.name || 'Centro Activa'}`);
+  alert(
+    `Generando Documento de Consentimiento Informado para:\nPaciente: ${patientData.name}\nRef: ${patientData.reference || 'S/R'}\nEdad: ${patientData.age}\n\nCentro: ${clinicData.name || 'Centro Activa'}`,
+  );
 };
 
 export const calculateDebt = (sessions: any[] = []): number => {
-    return sessions.reduce((acc, s) => acc + (s.paid ? 0 : (s.price || 0)), 0);
+  return sessions.reduce((acc, s) => acc + (s.paid ? 0 : s.price || 0), 0);
 };
 
 export const generateInvoiceHTML = (data: InvoiceData): string => {
-    const total = data.sessions.reduce((sum, s) => sum + (s.price || 0), 0);
-    const date = new Date().toLocaleDateString('es-ES');
+  const total = data.sessions.reduce((sum, s) => sum + (s.price || 0), 0);
+  const date = new Date().toLocaleDateString('es-ES');
 
-    return `
+  return `
         <html>
         <head>
             <style>
@@ -73,13 +74,17 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
                     </tr>
                 </thead>
                 <tbody>
-                    ${data.sessions.map(s => `
+                    ${data.sessions
+                      .map(
+                        (s) => `
                         <tr>
                             <td>${s.date}</td>
                             <td>Sesión de Musicoterapia (${s.type === 'individual' ? 'Individual' : 'Grupal'})</td>
                             <td style="text-align: right;">${s.price || 0}€</td>
                         </tr>
-                    `).join('')}
+                    `,
+                      )
+                      .join('')}
                 </tbody>
             </table>
             <div class="total">
@@ -90,56 +95,61 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
     `;
 };
 
-export const printInvoice = (clinicData: ClinicSettings, patient: Patient, sessionsToBill: Session[], invoiceNumber: string) => {
-    const html = generateInvoiceHTML({
-        clientName: patient.name,
-        clientMeta: `DNI/REF: ${patient.reference || '-'}`,
-        sessions: sessionsToBill,
-        invoiceNumber: invoiceNumber
-    });
+export const printInvoice = (
+  clinicData: ClinicSettings,
+  patient: Patient,
+  sessionsToBill: Session[],
+  invoiceNumber: string,
+) => {
+  const html = generateInvoiceHTML({
+    clientName: patient.name,
+    clientMeta: `DNI/REF: ${patient.reference || '-'}`,
+    sessions: sessionsToBill,
+    invoiceNumber: invoiceNumber,
+  });
 
-    const win = window.open('', '_blank');
-    if (win) {
-        win.document.write(html);
-        win.document.close();
-        win.print();
-    }
+  const win = window.open('', '_blank');
+  if (win) {
+    win.document.write(html);
+    win.document.close();
+    win.print();
+  }
 };
 
 export const compressImage = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (event) => {
-            const img = new Image();
-            img.src = event.target?.result as string;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 300;
-                const MAX_HEIGHT = 300;
-                let width = img.width;
-                let height = img.height;
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 300;
+        const MAX_HEIGHT = 300;
+        let width = img.width;
+        let height = img.height;
 
-                if (width > height) {
-                    if (width > MAX_WIDTH) {
-                        height *= MAX_WIDTH / width;
-                        width = MAX_WIDTH;
-                    }
-                } else {
-                    if (height > MAX_HEIGHT) {
-                        width *= MAX_HEIGHT / height;
-                        height = MAX_HEIGHT;
-                    }
-                }
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
 
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx?.drawImage(img, 0, 0, width, height);
-                resolve(canvas.toDataURL('image/jpeg', 0.7)); // Compress to 70% quality JPEG
-            };
-            img.onerror = (err) => reject(err);
-        };
-        reader.onerror = (err) => reject(err);
-    });
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.7)); // Compress to 70% quality JPEG
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
 };

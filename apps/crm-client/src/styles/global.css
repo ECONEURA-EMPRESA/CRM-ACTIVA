@@ -5,13 +5,13 @@
 @tailwind utilities;
 
 :root {
-  --primary: #EC008C;
+  --primary: #ec008c;
   --primary-dark: #be0070;
   --primary-light: #fdf2f8;
-  --bg-app: #F3F6F9; /* Fondo clínico suave */
-  --surface: #FFFFFF;
-  --text-main: #1E293B;
-  --text-muted: #64748B;
+  --bg-app: #f3f6f9; /* Fondo clínico suave */
+  --surface: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -19,62 +19,85 @@
   --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
 }
 
-body { 
-  font-family: 'Inter', sans-serif; 
-  background-color: var(--bg-app); 
-  color: var(--text-main); 
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text-main);
   -webkit-font-smoothing: antialiased;
 }
 
 /* Scrollbar premium */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
 
 /* Animaciones suaves */
-.fade-enter { opacity: 0; transform: translateY(10px); }
-.fade-enter-active { opacity: 1; transform: translateY(0); transition: opacity 400ms cubic-bezier(0.16, 1, 0.3, 1), transform 400ms cubic-bezier(0.16, 1, 0.3, 1); }
+.fade-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 400ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
 
 /* Inputs con sensación de profundidad */
-.input-pro { 
-  width: 100%; 
-  background: #FFFFFF; 
-  border: 1px solid #E2E8F0; 
+.input-pro {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 0.75rem; /* Más redondeado */
-  padding: 0.875rem 1rem; 
-  font-size: 0.9rem; 
-  color: #1E293B; 
-  transition: all 0.2s ease; 
+  padding: 0.875rem 1rem;
+  font-size: 0.9rem;
+  color: #1e293b;
+  transition: all 0.2s ease;
   box-shadow: var(--shadow-sm);
 }
-.input-pro:focus { 
-  border-color: var(--primary); 
-  outline: none; 
-  box-shadow: 0 0 0 4px rgba(236, 0, 140, 0.15), var(--shadow-sm); 
+.input-pro:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow:
+    0 0 0 4px rgba(236, 0, 140, 0.15),
+    var(--shadow-sm);
   transform: translateY(-1px);
 }
-.input-pro::placeholder { color: #94A3B8; }
+.input-pro::placeholder {
+  color: #94a3b8;
+}
 
-.label-pro { 
-  display: block; 
-  font-size: 0.75rem; 
-  font-weight: 700; 
-  text-transform: uppercase; 
-  letter-spacing: 0.05em; 
-  color: #475569; 
-  margin-bottom: 0.5rem; 
+.label-pro {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #475569;
+  margin-bottom: 0.5rem;
 }
 
 /* Tarjetas con efecto 3D */
 .card-clinical {
   background: white;
   border-radius: 1rem;
-  border: 1px solid rgba(255,255,255,0.5);
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.05), 
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
     0 2px 4px -1px rgba(0, 0, 0, 0.03),
-    0 0 0 1px rgba(0,0,0,0.02); /* Borde sutil */
+    0 0 0 1px rgba(0, 0, 0, 0.02); /* Borde sutil */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .card-hoverable:hover {
@@ -85,7 +108,7 @@ body {
 
 /* Botones con gradiente sutil y sombra */
 .btn-primary {
-  background: linear-gradient(135deg, #EC008C 0%, #C20072 100%);
+  background: linear-gradient(135deg, #ec008c 0%, #c20072 100%);
   box-shadow: 0 4px 10px rgba(236, 0, 140, 0.3);
   border: none;
 }
@@ -99,10 +122,30 @@ body {
 }
 
 /* Estilos de Impresión */
-.a4-page { width: 210mm; min-height: 297mm; padding: 20mm; margin: 0 auto; background: white; box-shadow: var(--shadow-lg); color: #1e293b; font-size: 11pt; line-height: 1.5; }
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.a4-page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 20mm;
+  margin: 0 auto;
+  background: white;
+  box-shadow: var(--shadow-lg);
+  color: #1e293b;
+  font-size: 11pt;
+  line-height: 1.5;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
 /* Custom Scrollbar for elements */
-.custom-scrollbar::-webkit-scrollbar { width: 6px; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}

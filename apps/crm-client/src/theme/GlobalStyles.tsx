@@ -1,9 +1,9 @@
-
 import React from 'react';
 
 export const GlobalStyles = () => (
-    <style dangerouslySetInnerHTML={{
-        __html: `
+  <style
+    dangerouslySetInnerHTML={{
+      __html: `
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;700&display=swap');
     
     :root {
@@ -112,6 +112,7 @@ export const GlobalStyles = () => (
       .invoice-preview-container { position: static !important; width: 100% !important; height: auto !important; overflow: visible !important; }
       .invoice-paper { box-shadow: none !important; margin: 0 !important; width: 100% !important; max-width: none !important; border: none !important; }
     }
-    `
-    }} />
+    `,
+    }}
+  />
 );
