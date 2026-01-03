@@ -45,7 +45,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onDemoLogin }) => {
             <div className="relative z-10 w-full max-w-[460px] animate-in zoom-in-95 duration-500">
 
                 {/* Sombra de elevación 'Premium' y Borde Metálico */}
-                <div className="relative bg-white/80 backdrop-blur-xl rounded-[2rem] p-10 shadow-2xl border border-white/50 overflow-hidden ring-1 ring-white/60">
+                <div className="relative bg-white/80 backdrop-blur-xl rounded-[2rem] p-6 md:p-10 shadow-2xl border border-white/50 overflow-hidden ring-1 ring-white/60 mx-4 md:mx-0 w-full md:w-auto">
 
                     {/* Efecto de brillo metálico superior */}
                     <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white to-transparent opacity-80"></div>

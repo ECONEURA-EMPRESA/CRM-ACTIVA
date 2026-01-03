@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import { X, BookOpen, Target, AlertTriangle, Lightbulb } from 'lucide-react';
 import { CLINICAL_GUIDES } from '../../lib/constants'; // Need to export these from constants
 

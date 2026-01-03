@@ -1,117 +1,90 @@
-
 import express from 'express';
 import cors from 'cors';
 import { initializeApp, applicationDefault } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { authMiddleware } from './middleware';
+import { ZodError } from 'zod';
+
+// --- ADAPTERS & USE CASES ---
+import { FirestorePatientRepository } from './infrastructure/firebase/FirestorePatientRepository';
+import { FirestoreDashboardStatsRepository } from './infrastructure/firebase/FirestoreDashboardStatsRepository';
+import { LoggerService } from './infrastructure/logger/LoggerService';
+import { CreatePatientUseCase } from './core/application/CreatePatientUseCase';
 
 // --- INITIALIZE FIREBASE ---
 initializeApp({
-    credential: applicationDefault()
+    credential: applicationDefault() // In Cloud Run, this uses the Service Account automatically
 });
-
 const db = getFirestore();
+
+// --- DEPENDENCY INJECTION ROOT ---
+const patientRepo = new FirestorePatientRepository(db);
+const statsRepo = new FirestoreDashboardStatsRepository(db);
+const createPatient = new CreatePatientUseCase(patientRepo, statsRepo);
+
+
+// --- EXPRESS SETUP ---
 const app = express();
 const port = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // --- ROUTES ---
 
-// HEALTH (Public)
-app.get('/', (_req, res) => res.json({ status: 'ok', service: 'crm-backend-extended' }));
+// Ops: Standard Health Check
+app.get('/health', (_req, res) => res.status(200).json({ status: 'ok', uptime: process.uptime() }));
+app.get('/', (_req, res) => res.json({ status: 'ok', service: 'backend-api-hexagonal', version: '1.0.0' }));
 
-// SECURE API
+// Secure API Group
 app.use('/api', authMiddleware);
 
-// PATIENTS API
-// 1. GET ALL
-app.get('/api/patients', async (_req, res) => {
-    try {
-        const snapshot = await db.collection('patients').get();
-        const patients = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        res.json(patients);
-    } catch (e: any) {
-        res.status(500).json({ error: e.message });
-    }
-});
-
-// 2. GET SINGLE
-app.get('/api/patients/:id', async (req, res) => {
-    try {
-        const doc = await db.collection('patients').doc(req.params.id).get();
-        if (!doc.exists) {
-            res.status(404).json({ error: 'Patient not found' });
-        } else {
-            res.json({ id: doc.id, ...doc.data() });
-        }
-    } catch (e: any) {
-        res.status(500).json({ error: e.message });
-    }
-});
-
-// 3. CREATE
+// CONTROLLER: POST /api/patients
+// TODO: Use validate(createPatientSchema) middleware here in V1.1
 app.post('/api/patients', async (req, res) => {
     try {
-        const patientData = req.body;
-        // Clean ID from body if present to avoid duplication in data vs docId
-        const { id, ...data } = patientData;
-        const docRef = db.collection('patients').doc(); // Auto-ID
-        await docRef.set(data);
-        res.json({ id: docRef.id, ...data });
+        const userId = (req as any).user.uid;
+        const newPatient = await createPatient.execute(req.body, userId);
+        LoggerService.info('Patient Created', { patientId: newPatient.id, userId });
+        res.json(newPatient);
     } catch (e: any) {
-        res.status(500).json({ error: e.message });
+        if (e instanceof ZodError) {
+            res.status(400).json({ error: 'Validation Error', details: e.errors });
+        } else {
+            LoggerService.error('Create Patient Failed', e);
+            res.status(500).json({ error: e.message || 'Internal Server Error' });
+        }
     }
 });
 
-// 4. UPDATE (PUT)
-app.put('/api/patients/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const patientData = req.body;
-        // Ensure we don't overwrite the ID in the document data with a mismatch
-        const { id: bodyId, ...data } = patientData;
-
-        await db.collection('patients').doc(id).set(data, { merge: true });
-        res.json({ id, ...data });
-    } catch (e: any) {
-        res.status(500).json({ error: e.message });
-    }
+// QUERY: GET /api/stats (CQRS Read Model)
+app.get('/api/stats', async (req, res) => {
+    const userId = (req as any).user.uid;
+    const stats = await statsRepo.getStats(userId);
+    res.json(stats);
 });
 
-// 5. DELETE
-app.delete('/api/patients/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        await db.collection('patients').doc(id).delete();
-        res.json({ success: true, id });
-    } catch (e: any) {
-        res.status(500).json({ error: e.message });
-    }
+// Legacy/Simple Routes (To be migrated progressively)
+app.get('/api/patients', async (req, res) => {
+    const userId = (req as any).user.uid;
+    const patients = await patientRepo.findByUserId(userId);
+    res.json(patients);
 });
 
-// SETTINGS API
-app.get('/api/settings', async (_req, res) => {
-    try {
-        const doc = await db.collection('config').doc('clinic_settings').get();
-        res.json(doc.exists ? doc.data() : {});
-    } catch (e: any) {
-        res.status(500).json({ error: e.message });
-    }
+// --- SERVER LIFECYCLE ---
+const server = app.listen(port, () => {
+    LoggerService.info(`Backend API (Hexagonal) listening on port ${port}`);
 });
 
-app.post('/api/settings', async (req, res) => {
-    try {
-        await db.collection('config').doc('clinic_settings').set(req.body, { merge: true });
-        res.json({ success: true });
-    } catch (e: any) {
-        res.status(500).json({ error: e.message });
-    }
-});
+// Graceful Shutdown Strategy
+const shutdown = (signal: string) => {
+    LoggerService.info(`${signal} received. Starting graceful shutdown...`);
+    server.close(() => {
+        LoggerService.info('HTTP server closed.');
+        // Close DB connections if any generic pools exist (Firestore handles this automatically)
+        process.exit(0);
+    });
+};
 
-// --- SERVER ---
-app.listen(port, () => {
-    console.log(`Backend API with Firestore listening on port ${port}`);
-});
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));

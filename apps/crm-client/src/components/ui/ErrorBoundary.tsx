@@ -1,7 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Card } from './Card';
+import { AlertOctagon, RefreshCw } from 'lucide-react';
 import { Button } from './Button';
-import { RefreshCw } from 'lucide-react';
 
 interface Props {
     children?: ReactNode;
@@ -24,23 +23,41 @@ export class ErrorBoundary extends Component<Props, State> {
 
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         console.error("Uncaught error:", error, errorInfo);
+        // Here you would log to your new LoggerService
     }
+
+    private handleReload = () => {
+        window.location.reload();
+    };
 
     public render() {
         if (this.state.hasError) {
             return (
-                <div className="flex h-screen w-full items-center justify-center bg-slate-50 p-4">
-                    <Card className="max-w-md w-full p-8 text-center border-red-100 shadow-xl">
-                        <div className="mx-auto w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-6 text-3xl font-bold">!</div>
-                        <h2 className="text-2xl font-black text-slate-800 mb-2">Algo salió mal</h2>
-                        <p className="text-slate-500 mb-6">Ha ocurrido un error inesperado en la aplicación.</p>
-                        <div className="bg-slate-50 p-3 rounded-lg text-xs text-left mb-6 overflow-auto max-h-32 text-slate-600 font-mono border border-slate-200">
-                            {this.state.error?.message}
+                <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+                    <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center border-t-4 border-red-500">
+                        <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500">
+                            <AlertOctagon size={40} />
                         </div>
-                        <Button onClick={() => window.location.reload()} icon={RefreshCw} className="w-full">
-                            Recargar Aplicación
+                        <h1 className="text-2xl font-black text-slate-900 mb-2">Algo salió mal</h1>
+                        <p className="text-slate-500 mb-6">
+                            El sistema ha detectado un error inesperado. Hemos registrado este evento.
+                            Por favor, intente recargar la página.
+                        </p>
+
+                        {this.state.error && (
+                            <div className="bg-slate-100 p-3 rounded-lg text-xs font-mono text-left mb-6 overflow-x-auto text-slate-600">
+                                {this.state.error.message}
+                            </div>
+                        )}
+
+                        <Button
+                            onClick={this.handleReload}
+                            icon={RefreshCw}
+                            className="w-full justify-center shadow-lg shadow-red-200"
+                        >
+                            Reiniciar Sistema
                         </Button>
-                    </Card>
+                    </div>
                 </div>
             );
         }

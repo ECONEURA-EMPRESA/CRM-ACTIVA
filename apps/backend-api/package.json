@@ -10,6 +10,7 @@
         "lint": "eslint src/**/*.ts"
     },
     "dependencies": {
+        "@monorepo/shared": "workspace:*",
         "cors": "^2.8.5",
         "express": "^4.18.2",
         "firebase-admin": "^11.11.1",

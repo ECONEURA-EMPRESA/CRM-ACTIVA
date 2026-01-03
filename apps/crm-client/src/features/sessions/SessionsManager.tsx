@@ -122,12 +122,12 @@ export const SessionsManager: React.FC<SessionsManagerProps> = ({ patients, onUp
                 session={selectedSession?.session}
             />
 
-            <GroupSessionModal
-                isOpen={isGroupModalOpen}
-                onClose={() => setIsGroupModalOpen(false)}
-                onSave={handleSaveGroupSession}
-                patients={patients}
-            />
+            {isGroupModalOpen && (
+                <GroupSessionModal
+                    onClose={() => setIsGroupModalOpen(false)}
+                    onSave={handleSaveGroupSession}
+                />
+            )}
         </div>
     );
 };

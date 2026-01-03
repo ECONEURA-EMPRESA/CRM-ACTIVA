@@ -12,9 +12,10 @@ interface PatientsDirectoryProps {
     patients: Patient[];
     onSelectPatient: (patient: Patient) => void;
     onNewPatient: (data: any) => void;
+    initialFilter?: 'all' | 'adults' | 'kids';
 }
 
-export const PatientsDirectory: React.FC<PatientsDirectoryProps> = ({ patients, onSelectPatient, onNewPatient }) => {
+export const PatientsDirectory: React.FC<PatientsDirectoryProps> = ({ patients, onSelectPatient, onNewPatient, initialFilter = 'all' }) => {
     const [search, setSearch] = useState('');
     const [filterPathology, setFilterPathology] = useState('all');
     const [isAdmissionOpen, setIsAdmissionOpen] = useState(false);
@@ -22,8 +23,15 @@ export const PatientsDirectory: React.FC<PatientsDirectoryProps> = ({ patients, 
     const filteredPatients = patients.filter(p => {
         const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
             p.diagnosis.toLowerCase().includes(search.toLowerCase());
-        const matchesFilter = filterPathology === 'all' || p.pathologyType === filterPathology;
-        return matchesSearch && matchesFilter;
+
+        const matchesPathology = filterPathology === 'all' || p.pathologyType === filterPathology;
+
+        let matchesAge = true;
+        if (initialFilter === 'adults') matchesAge = (p.age as number) >= 15;
+        // Teens removed. Children is strictly < 15
+        if (initialFilter === 'kids') matchesAge = (p.age as number) < 15;
+
+        return matchesSearch && matchesPathology && matchesAge;
     });
 
     return (

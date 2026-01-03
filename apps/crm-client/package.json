@@ -9,13 +9,16 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@monorepo/shared": "workspace:*",
         "@types/styled-components": "^5.1.36",
         "date-fns": "^4.1.0",
         "firebase": "^12.7.0",
         "lucide-react": "^0.562.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
+        "react-router-dom": "^7.11.0",
         "react-to-print": "^3.2.0",
+        "recharts": "^3.6.0",
         "styled-components": "^6.1.19"
     },
     "devDependencies": {

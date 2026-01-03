@@ -1,4 +1,4 @@
-import { Patient } from "./types";
+import { Patient, FormulationData } from "./types";
 
 /**
  * UTILITY: Data Sovereignty Engine
@@ -6,8 +6,10 @@ import { Patient } from "./types";
  * to ensure Microsoft Excel compatibility without data corruption.
  */
 
+type CSVValue = string | number | boolean | null | undefined;
+
 // Helper: Escape CSV fields to handle commas, quotes, and newlines
-const escapeCSV = (value: any): string => {
+const escapeCSV = (value: CSVValue): string => {
     if (value === null || value === undefined) return '';
     const stringValue = String(value);
     if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
@@ -23,21 +25,35 @@ export const downloadPatientsCSV = (patients: Patient[]) => {
         "Fecha Ingreso", "Cuidador", "Teléfono", "Situación", "MOCA (Último)", "MMSE (Último)", "GDS", "Formulación"
     ];
 
-    const rows = patients.map(p => [
-        p.reference || p.id,
-        p.name,
-        p.age,
-        p.diagnosis,
-        p.pathologyType,
-        p.joinedDate,
-        p.caregiverName,
-        p.caregiverPhone,
-        p.livingSituation,
-        p.cognitiveScores?.moca || "-",
-        p.cognitiveScores?.mmse || "-",
-        p.cognitiveScores?.gds || "-",
-        (p.clinicalFormulation?.synthesis as any)?.text || "-"
-    ]);
+    const rows: CSVValue[][] = patients.map(p => {
+        let formulationText = "-";
+
+        if (p.clinicalFormulation?.synthesis) {
+            if (typeof p.clinicalFormulation.synthesis === 'string') {
+                formulationText = p.clinicalFormulation.synthesis;
+            } else {
+                // Type guard for FormulationData
+                const synthesis = p.clinicalFormulation.synthesis as FormulationData;
+                formulationText = synthesis.text || "-";
+            }
+        }
+
+        return [
+            p.reference || p.id,
+            p.name,
+            p.age,
+            p.diagnosis,
+            p.pathologyType,
+            p.joinedDate,
+            p.caregiverName,
+            p.caregiverPhone,
+            p.livingSituation,
+            p.cognitiveScores?.moca || "-",
+            p.cognitiveScores?.mmse || "-",
+            p.cognitiveScores?.gds || "-",
+            formulationText
+        ];
+    });
 
     generateCSV("Pacientes_Maestro_" + new Date().toISOString().slice(0, 10), headers, rows);
 };
@@ -49,7 +65,7 @@ export const downloadSessionsCSV = (patients: Patient[]) => {
         "Precio", "Pagado", "Ausencia", "Notas", "Actividades"
     ];
 
-    const rows: any[][] = [];
+    const rows: CSVValue[][] = [];
 
     patients.forEach(p => {
         (p.sessions || []).forEach(s => {
@@ -73,7 +89,7 @@ export const downloadSessionsCSV = (patients: Patient[]) => {
 };
 
 // --- CORE: BLOB GENERATOR ---
-const generateCSV = (filename: string, headers: string[], rows: any[][]) => {
+const generateCSV = (filename: string, headers: string[], rows: CSVValue[][]) => {
     const csvContent = [
         headers.join(','),
         ...rows.map(row => row.map(escapeCSV).join(','))

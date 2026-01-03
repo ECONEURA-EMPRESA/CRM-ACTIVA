@@ -1,76 +1,56 @@
-
 import React, { useState } from 'react';
-import { X, CalendarCheck, Clock, User } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Patient } from '../../../lib/types';
-import { formatDateForInput } from '../../../lib/utils';
 
 interface QuickAppointmentModalProps {
-    isOpen: boolean;
     onClose: () => void;
     patients: Patient[];
-    onSave: (appointment: any) => void;
+    onSave: (data: any) => void;
+    mode?: 'existing' | 'new';
 }
 
-export const QuickAppointmentModal: React.FC<QuickAppointmentModalProps> = ({ isOpen, onClose, patients, onSave }) => {
-    const [date, setDate] = useState(formatDateForInput(new Date().toISOString()));
+export const QuickAppointmentModal: React.FC<QuickAppointmentModalProps> = ({ onClose, patients, onSave, mode = 'existing' }) => {
+    // Mode prop added to auto-select tab
+    const [currentMode, setCurrentMode] = useState(mode);
+    const [selectedPatientId, setSelectedPatientId] = useState('');
+    const [newPatientName, setNewPatientName] = useState('');
+    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [time, setTime] = useState('10:00');
-    const [patientId, setPatientId] = useState('');
-    const [note, setNote] = useState('');
-
-    if (!isOpen) return null;
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSave({
-            date, time, patientId, note, type: 'appointment'
-        });
-        onClose();
-        setPatientId(''); setNote('');
-    };
 
     return (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in zoom-in-95 duration-200">
-            <div className="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden">
-                <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-pink-50/50">
-                    <h2 className="text-lg font-black text-slate-800 flex items-center gap-2"><CalendarCheck className="text-pink-600" /> Agendar Cita</h2>
-                    <button onClick={onClose} className="p-1 hover:bg-slate-200 rounded-full"><X size={18} /></button>
-                </div>
-                <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <div className="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+            <div className="bg-white w-full max-w-md rounded-2xl shadow-3d p-6 animate-in fade-in zoom-in-95">
+                <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><Clock className="text-pink-600" /> Agendar Cita</h2>
+                <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); onSave({ mode: currentMode, patientId: selectedPatientId, name: newPatientName, date, time }); }}>
+                    <div className="flex bg-slate-50 p-1.5 rounded-xl">
+                        <button type="button" onClick={() => setCurrentMode('existing')} className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${currentMode === 'existing' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500'}`}>Existente</button>
+                        <button type="button" onClick={() => setCurrentMode('new')} className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${currentMode === 'new' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500'}`}>Nuevo</button>
+                    </div>
+                    {currentMode === 'existing' ? (
+                        <select className="input-pro" value={selectedPatientId} onChange={e => setSelectedPatientId(e.target.value)} required>
+                            <option value="">- Seleccionar -</option>
+                            {patients.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                        </select>
+                    ) : (
+                        <input className="input-pro" placeholder="Nombre del nuevo paciente" value={newPatientName} onChange={e => setNewPatientName(e.target.value)} required />
+                    )}
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
+                        <div>
                             <label className="label-pro">Fecha</label>
-                            <input type="date" required className="input-pro" value={date} onChange={e => setDate(e.target.value)} />
+                            <input type="date" className="input-pro" value={date} onChange={e => setDate(e.target.value)} required />
                         </div>
-                        <div className="space-y-1">
+                        <div>
                             <label className="label-pro">Hora</label>
-                            <div className="relative">
-                                <Clock className="absolute left-3 top-3 text-slate-400" size={16} />
-                                <input type="time" required className="input-pro pl-10" value={time} onChange={e => setTime(e.target.value)} />
-                            </div>
+                            <input type="time" className="input-pro" value={time} onChange={e => setTime(e.target.value)} required />
                         </div>
                     </div>
-
-                    <div className="space-y-1">
-                        <label className="label-pro">Paciente</label>
-                        <div className="relative">
-                            <User className="absolute left-3 top-3 text-slate-400" size={16} />
-                            <select className="input-pro pl-10 appearance-none" required value={patientId} onChange={e => setPatientId(e.target.value)}>
-                                <option value="">Seleccionar...</option>
-                                {patients.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                            </select>
-                        </div>
+                    <div className="flex gap-2 justify-end pt-2">
+                        <Button variant="ghost" onClick={onClose} type="button">Cancelar</Button>
+                        <Button type="submit">Confirmar Cita</Button>
                     </div>
-
-                    <div className="space-y-1">
-                        <label className="label-pro">Nota (Opcional)</label>
-                        <textarea className="input-pro" placeholder="Detalles de la cita..." value={note} onChange={e => setNote(e.target.value)} />
-                    </div>
-
-                    <Button className="w-full mt-4" type="submit">Confirmar Cita</Button>
                 </form>
             </div>
         </div>
     );
 };
-

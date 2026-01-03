@@ -1,133 +1,96 @@
-
 import React, { useState } from 'react';
-import { X, Save, Clock, Euro, Users, MapPin } from 'lucide-react';
+import { X, PlusCircle } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
-import { Session } from '../../../lib/types'; // Using Shared types
-import { formatDateForInput } from '../../../lib/utils';
-import { Patient } from '../../../lib/types';
+
+// Helper for date display formatting
+const formatDateForDisplay = (isoDate: string) => {
+    if (!isoDate) return new Date().toLocaleDateString('es-ES');
+    const [year, month, day] = isoDate.split('-');
+    return `${day}/${month}/${year}`;
+};
 
 interface GroupSessionModalProps {
-    isOpen: boolean;
     onClose: () => void;
-    onSave: (session: Session) => void;
-    patients: Patient[]; // Requerido para seleccionar participantes
+    onSave: (data: any) => void;
 }
 
-export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({ isOpen, onClose, onSave, patients }) => {
-    const [date, setDate] = useState(formatDateForInput(new Date().toISOString()));
-    const [price, setPrice] = useState(25); // Precio por persona default
-    const [notes, setNotes] = useState('');
-    const [location, setLocation] = useState('Sala Principal');
-    const [selectedPatients, setSelectedPatients] = useState<string[]>([]); // Array of IDs
-    const [groupAnalysis, setGroupAnalysis] = useState('');
-
-    if (!isOpen) return null;
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        // Mapeamos los nombres para guardarlos en la sesión (legacy support)
-        const participantNames = patients.filter(p => selectedPatients.includes(String(p.id))).map(p => p.name);
-
-        const newSession: Session = {
-            id: Date.now(),
-            date: new Date(date).toLocaleDateString('es-ES'),
-            type: 'group',
-            price: Number(price), // Precio por persona
-            paid: false, // Default
-            isAbsent: false,
-            notes,
-            location,
-            participantNames, // IDs o Nombres
-            groupAnalysis
-            // En backend real, aquí guardaríamos 'participantIds': selectedPatients
-        };
-
-        onSave(newSession);
-        onClose();
-        // Reset basic fields
-        setNotes(''); setGroupAnalysis(''); setSelectedPatients([]);
-    };
-
-    const togglePatient = (id: string) => {
-        setSelectedPatients(prev => prev.includes(id) ? prev.filter(pid => pid !== id) : [...prev, id]);
-    };
+export const GroupSessionModal: React.FC<GroupSessionModalProps> = ({ onClose, onSave }) => {
+    const [participants, setParticipants] = useState<string[]>([]);
+    const [newParticipant, setNewParticipant] = useState("");
+    const [priceGroup, setPriceGroup] = useState(150);
+    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
     return (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in zoom-in-95 duration-200">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl flex flex-col overflow-hidden max-h-[90vh]">
-                <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center"><Users size={20} /></div>
-                        <div>
-                            <h2 className="text-xl font-black text-slate-800">Nueva Sesión Grupal</h2>
-                            <p className="text-sm text-slate-500 font-medium">Registro colectivo / taller</p>
-                        </div>
-                    </div>
-                    <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-full transition-colors"><X size={20} /></button>
+        <div className="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+            <div className="bg-white w-full max-w-4xl rounded-2xl shadow-3d p-6 animate-in fade-in zoom-in-95">
+                <div className="flex justify-between mb-6">
+                    <h2 className="text-xl font-bold">Nueva Sesión Grupal</h2>
+                    <button onClick={onClose}><X /></button>
                 </div>
-
-                <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-8">
-                    {/* Datos Logísticos */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="space-y-2">
-                            <label className="label-pro">Fecha</label>
-                            <div className="relative">
-                                <Clock className="absolute left-3 top-3 text-slate-400" size={18} />
-                                <input type="date" className="input-pro pl-10" required value={date} onChange={e => setDate(e.target.value)} />
+                <form onSubmit={e => {
+                    e.preventDefault();
+                    const d = new FormData(e.target as HTMLFormElement);
+                    onSave({
+                        id: `group-${Date.now()}`,
+                        date: formatDateForDisplay(date),
+                        time: d.get('time'),
+                        phase: 2,
+                        activities: ["Dinámica"],
+                        location: d.get('location'),
+                        type: 'group',
+                        participantNames: participants,
+                        price: priceGroup,
+                        paid: false,
+                        methodology: d.get('methodology'),
+                        observations: d.get('observations')
+                    });
+                }}>
+                    <div className="grid grid-cols-2 gap-8">
+                        <div>
+                            <div className="flex justify-between mb-2">
+                                <label className="label-pro">Participantes</label>
+                                <input type="number" value={priceGroup} onChange={e => setPriceGroup(Number(e.target.value))} className="w-16 text-right font-bold bg-slate-50 border rounded px-2" />
+                            </div>
+                            <div className="flex gap-2 mb-3">
+                                <input className="input-pro" placeholder="Nombre..." value={newParticipant} onChange={e => setNewParticipant(e.target.value)} />
+                                <Button type="button" onClick={() => { if (newParticipant) setParticipants([...participants, newParticipant]); setNewParticipant(""); }} icon={PlusCircle}>Añadir</Button>
+                            </div>
+                            <div className="border p-3 rounded-xl h-40 overflow-y-auto bg-slate-50">
+                                {participants.length === 0 && <p className="text-slate-400 text-xs italic text-center py-10">Añade participantes a la lista</p>}
+                                {participants.map((p, i) => <div key={i} className="flex justify-between p-2 bg-white border border-slate-100 mb-1 rounded text-sm font-medium shadow-sm">{p}</div>)}
                             </div>
                         </div>
-                        <div className="space-y-2">
-                            <label className="label-pro">Precio / Persona</label>
-                            <div className="relative">
-                                <Euro className="absolute left-3 top-3 text-slate-400" size={18} />
-                                <input type="number" className="input-pro pl-10" required value={price} onChange={e => setPrice(Number(e.target.value))} />
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="label-pro">Fecha</label>
+                                    <input type="date" value={date} onChange={e => setDate(e.target.value)} className="input-pro" required />
+                                </div>
+                                <div>
+                                    <label className="label-pro">Hora</label>
+                                    <input type="time" name="time" defaultValue="10:00" className="input-pro" required />
+                                </div>
                             </div>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="label-pro">Ubicación</label>
-                            <div className="relative">
-                                <MapPin className="absolute left-3 top-3 text-slate-400" size={18} />
-                                <input className="input-pro pl-10" value={location} onChange={e => setLocation(e.target.value)} />
+                            <div>
+                                <label className="label-pro">Lugar</label>
+                                <input name="location" className="input-pro" placeholder="Sala o Centro" required />
+                            </div>
+                            <div>
+                                <label className="label-pro">Metodología</label>
+                                <textarea name="methodology" className="input-pro h-20 resize-none" placeholder="Técnicas utilizadas..." />
+                            </div>
+                            <div>
+                                <label className="label-pro">Observaciones</label>
+                                <textarea name="observations" className="input-pro h-20 resize-none" placeholder="Dinámica grupal, incidencias..." />
                             </div>
                         </div>
                     </div>
-
-                    {/* Selección Participantes */}
-                    <div className="border rounded-2xl p-6 border-slate-200 bg-slate-50">
-                        <h4 className="font-bold text-slate-800 mb-4 flex justify-between">
-                            <span>Participantes</span>
-                            <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">{selectedPatients.length} Seleccionados</span>
-                        </h4>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-40 overflow-y-auto custom-scrollbar pr-2">
-                            {patients.map(p => (
-                                <label key={p.id} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${selectedPatients.includes(String(p.id)) ? 'bg-indigo-600 border-indigo-600 text-white shadow-md' : 'bg-white border-slate-200 hover:border-indigo-300'}`}>
-                                    <input type="checkbox" className="hidden" checked={selectedPatients.includes(String(p.id))} onChange={() => togglePatient(String(p.id))} />
-                                    <span className="font-bold text-xs truncate">{p.name}</span>
-                                </label>
-                            ))}
-                        </div>
-                        {patients.length === 0 && <p className="text-sm text-slate-400 italic text-center">No hay pacientes registrados.</p>}
-                    </div>
-
-                    {/* Análisis Grupal */}
-                    <div className="space-y-2">
-                        <label className="label-pro">Análisis de Dinámica Grupal</label>
-                        <textarea
-                            className="input-pro min-h-[120px]"
-                            placeholder="Describa la interacción, clima grupal, participación general..."
-                            value={groupAnalysis}
-                            onChange={e => setGroupAnalysis(e.target.value)}
-                        />
+                    <div className="flex justify-end mt-6 gap-2 pt-4 border-t border-slate-100">
+                        <Button variant="ghost" onClick={onClose} type="button">Cancelar</Button>
+                        <Button type="submit">Guardar Sesión</Button>
                     </div>
                 </form>
-
-                <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
-                    <Button variant="secondary" onClick={onClose}>Cancelar</Button>
-                    <Button onClick={handleSubmit} icon={Save} disabled={selectedPatients.length === 0}>Guardar Sesión Grupal</Button>
-                </div>
             </div>
         </div>
     );
 };
-

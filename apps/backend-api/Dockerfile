@@ -1,24 +1,42 @@
+FROM node:20-alpine AS base
 
-# Base image
-FROM node:20-slim
+# This stage uses turbo to prune the workspace to only what is needed for backend-api
+FROM base AS builder
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+RUN npm install turbo --global
+COPY . .
+RUN turbo prune --scope=backend-api --docker
 
-# Set working directory
+# Add lockfile and package.json's to install dependencies
+FROM base AS installer
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy package files (removed pnpm-lock.yaml as it does not exist in this dir)
-COPY package.json ./
+# First install dependencies (as they change less often)
+COPY .gitignore .gitignore
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+# Ensure workspace definition is present
+COPY pnpm-workspace.yaml pnpm-workspace.yaml
+COPY tsconfig.json tsconfig.json
+RUN npm install -g pnpm && pnpm install
 
-# Install dependencies (using npm to auto-generate lockfile if needed)
-RUN npm install
+# Build the project and its dependencies
+COPY --from=builder /app/out/full/ .
+COPY turbo.json turbo.json
 
-# Copy source code
-COPY . .
+RUN npm install -g pnpm && pnpm run build --filter=backend-api...
 
-# Build the project (compiles TS to JS)
-RUN npm run build 
+# Final runner stage
+FROM base AS runner
+WORKDIR /app
 
-# Expose port
-EXPOSE 3000
+# Don't run production as root
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 expressjs
+USER expressjs
 
-# Start command
-CMD ["node", "dist/server.js"]
+COPY --from=installer /app .
+
+CMD ["node", "apps/backend-api/dist/server.js"]

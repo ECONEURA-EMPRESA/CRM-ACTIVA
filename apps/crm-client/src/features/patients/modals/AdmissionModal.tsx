@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, UserCheck, Hash, Users, Music, Printer, Save } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { generatePatientReference, COMMON_PATHOLOGIES } from '../../../lib/patientUtils';
+import { compressImage } from '../../../lib/utils';
 import { Patient } from '../../../lib/types';
 
 interface AdmissionModalProps {
@@ -26,6 +27,21 @@ export const AdmissionModal: React.FC<AdmissionModalProps> = ({ onClose, onSave,
     const [reference, setReference] = useState(initialData?.reference || '');
     const [isManualRef, setIsManualRef] = useState(!!initialData?.reference);
     const [age, setAge] = useState<string | number>(initialData?.age || '');
+    const [birthDate, setBirthDate] = useState(initialData?.birthDate || '');
+
+    // EFFECT: Calcular edad si cambia nacimiento
+    useEffect(() => {
+        if (birthDate) {
+            const birth = new Date(birthDate);
+            const today = new Date();
+            let calculatedAge = today.getFullYear() - birth.getFullYear();
+            const m = today.getMonth() - birth.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+                calculatedAge--;
+            }
+            setAge(calculatedAge);
+        }
+    }, [birthDate]);
 
     // EFFECT: Generar referencia automáticamente
     useEffect(() => {
@@ -35,12 +51,16 @@ export const AdmissionModal: React.FC<AdmissionModalProps> = ({ onClose, onSave,
         }
     }, [name, date, isManualRef]);
 
-    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const f = e.target.files?.[0];
         if (f) {
-            const r = new FileReader();
-            r.onloadend = () => setPhotoPreview(r.result as string);
-            r.readAsDataURL(f);
+            try {
+                const compressed = await compressImage(f);
+                setPhotoPreview(compressed);
+            } catch (err) {
+                console.error("Error compressing image:", err);
+                alert("Error al procesar la imagen. Inténtelo de nuevo.");
+            }
         }
     };
 
@@ -120,7 +140,17 @@ export const AdmissionModal: React.FC<AdmissionModalProps> = ({ onClose, onSave,
                             <div className="flex-1 w-full space-y-5">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div><label className="label-pro">Nombre Completo</label><input name="name" value={name} onChange={e => setName(e.target.value)} className="input-pro" required placeholder="Ej. Juan Pérez" /></div>
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div>
+                                            <label className="label-pro">Nacimiento</label>
+                                            <input
+                                                name="birthDate"
+                                                type="date"
+                                                value={birthDate}
+                                                onChange={e => setBirthDate(e.target.value)}
+                                                className="input-pro"
+                                            />
+                                        </div>
                                         <div><label className="label-pro">Edad</label><input name="age" type="number" value={age} onChange={e => setAge(e.target.value)} className="input-pro" required /></div>
                                         <div><label className="label-pro">Fecha Ingreso</label><input name="joinedDate" type="date" value={date} onChange={e => setDate(e.target.value)} className="input-pro" /></div>
                                     </div>

@@ -18,7 +18,10 @@ export const Button: React.FC<ButtonProps> = ({
     size = "md",
     ...props
 }) => {
-    const sizes = { sm: "px-3 py-1.5 text-xs", md: "px-5 py-2.5 text-sm" };
+    const sizes = {
+        sm: "px-3 py-2 text-xs min-h-[36px] md:min-h-0", // Boosted for touch
+        md: "px-5 py-3 text-sm min-h-[44px] md:min-h-0"
+    };
     const variants = {
         primary: "btn-primary text-white",
         secondary: "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-slate-300 hover:shadow-md transition-all",

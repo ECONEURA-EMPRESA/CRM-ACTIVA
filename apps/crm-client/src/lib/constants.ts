@@ -20,8 +20,9 @@ export const COMMON_PATHOLOGIES = [
     { label: "Depresión y Trastornos del Ánimo", value: "mood" },
     { label: "Ansiedad y Estrés", value: "mood" },
     { label: "--- Infanto-Juvenil ---", value: "", disabled: true },
-    { label: "TEA", value: "neuro" },
-    { label: "TDAH", value: "neuro" },
+    { label: "TEA", value: "tea" },
+    { label: "TDAH", value: "adhd" },
+    { label: "Retraso del Desarrollo", value: "dd" },
     { label: "--- Otros ---", value: "", disabled: true },
     { label: "Sin Patología (Bienestar)", value: "other" },
     { label: "Otras...", value: "other" }
@@ -29,24 +30,20 @@ export const COMMON_PATHOLOGIES = [
 
 export const FORMULATION_OPTIONS = {
     synthesis: [
-        "Deterioro Cognitivo Leve", "EA (Alzheimer)", "Demencia Vascular", "Demencia Mixta",
-        "Cuerpos de Lewy / Parkinson", "GDS 3 (Deterioro Leve)", "GDS 4 (Moderado)",
-        "GDS 5 (Moderado-Grave)", "GDS 6 (Grave)", "GDS 7 (Muy Grave)", "Sin Deterioro Cognitivo"
+        "Deterioro Cognitivo Leve", "EA (Alzheimer)", "Demencia Vascular", "GDS 4 (Moderado)", // Adultos
+        "TEA Grado 1/2/3", "TDAH Combinado", "Retraso Global Desarrollo", "Trastorno de la Comunicación", "Síndrome de Down" // Niños
     ],
     preserved: [
-        "Memoria Musical Emocional", "Ritmo Básico / Sincronización", "Canto / Tarareo",
-        "Reconocimiento Melodías", "Conexión Emocional Sonora", "Lectoescritura Musical",
-        "Atención Sostenida (Tarea Musical)", "Preferencia Estética", "Movimiento asociado"
+        "Memoria Musical Emocional", "Ritmo Básico", "Canto / Tarareo", "Atención Sostenida", "Preferencia Estética", // Común
+        "Imitación Sonora", "Juego Simbólico", "Curiosidad/Exploración", "Vínculo con Cuidador" // Niños
     ],
     difficulties: [
-        "Desorientación T-E", "Afasia / Anomia", "Apraxia", "Agnosia",
-        "Apatía / Abulia", "Agitación / Agresividad", "Ansiedad / Depresión",
-        "Aislamiento Social", "Deambulación Errática", "Déficit Atencional"
+        "Desorientación T-E", "Afasia / Anomia", "Rigidez Cognitiva", "Aislamiento Social", "Agitación", // Adultos
+        "Baja Tolerancia Frustración", "Hipersensibilidad Auditiva", "Déficit Atencional", "Retraso del Lenguaje", "Regulación Emocional" // Niños
     ],
     hypothesis: [
-        "Música como Anclaje (Seguridad)", "Estimulación Cognitiva (Reminiscencia)",
-        "Regulación Conductual (Ritmo)", "Facilitación Comunicación Verbal",
-        "Expresión Emocional (ISO)", "Identidad Sonora", "Socialización / Pertenencia"
+        "Música como Anclaje", "Estimulación Cognitiva", "Reminiscencia", // Adultos
+        "Regulación Conductual (Ritmo)", "Facilitación Comunicación", "Juego Musical Estructurado", "Sincronización Motora", "Entrenamiento Auditivo" // Niños
     ]
 };
 
@@ -70,21 +67,17 @@ export const MMSE_SECTIONS = [
 ];
 
 export const ADMISSION_CHECKS = {
-    safety: [
-        "Crisis epilépticas recientes / no controladas",
-        "Hipersensibilidad auditiva severa",
-        "Agitación psicomotriz aguda",
-        "Riesgo de fuga / Deambulación errática",
-        "Alergias graves conocidas",
-        "Dificultades severas de deglución"
+    adult_safety: [
+        "Crisis epilépticas", "Hipersensibilidad auditiva", "Agitación psicomotriz", "Riesgo de fuga", "Dificultades deglución"
     ],
-    prep: [
-        "Historia clínica revisada",
-        "Entrevista con familiares/cuidador realizada",
-        "Preferencias musicales (ISO) identificadas",
-        "Espacio físico preparado (luz, ruido, sillas)",
-        "Instrumentos seleccionados y afinados",
-        "Objetivos iniciales definidos"
+    adult_prep: [
+        "Historia clínica revisada", "Entrevista familiar", "ISO identificada", "Instrumentos afinados"
+    ],
+    child_safety: [
+        "Crisis epilépticas", "Hipersensibilidad (Volumen)", "Riesgo de fuga", "Atragantamiento (piezas pequeñas)", "Conductas disruptivas"
+    ],
+    child_prep: [
+        "Objetivos preliminares claros", "Material atractivo seleccionado", "Estrategia de inicio (acogida)", "Estrategia de cierre", "Entrevista padres"
     ]
 };
 
@@ -95,6 +88,69 @@ export const CLINICAL_GUIDES: Record<string, any> = {
     other: { title: "Bienestar General", objectives: ["Autoconocimiento", "Relajación"], techniques: ["Escucha activa", "Improvisación libre"], precautions: ["Respeto al proceso"], focus: "Crecimiento Personal" }
 };
 
+// --- CHILD DEVELOPMENT DOMAINS ---
+import { Activity, MessageSquare, Brain, Heart, Music } from 'lucide-react';
+
+export const CHILD_DEV_DOMAINS = [
+    {
+        id: "sensory",
+        title: "Sensoriomotor",
+        icon: Activity,
+        color: "blue",
+        items: ["Procesamiento Auditivo", "Exploración Táctil/Instrumental", "Coordinación Visomotora", "Control Motor (Gross/Fine)"]
+    },
+    {
+        id: "comm",
+        title: "Comunicación",
+        icon: MessageSquare,
+        color: "emerald",
+        items: ["Intención Comunicativa", "Contacto Visual", "Lenguaje Verbal/Vocal", "Comunicación No Verbal"]
+    },
+    {
+        id: "cognitive",
+        title: "Cognitivo",
+        icon: Brain,
+        color: "purple",
+        items: ["Atención Sostenida", "Memoria Musical", "Comprensión Causa-Efecto", "Seguimiento de Instrucciones"]
+    },
+    {
+        id: "socio",
+        title: "Socio-Emocional",
+        icon: Heart,
+        color: "rose",
+        items: ["Atención Conjunta", "Toma de Turnos", "Expresión Emocional", "Vínculo Terapéutico", "Tolerancia a la Frustración"]
+    }
+];
+
+export const CHILD_MUSICAL_PROFILE = [
+    { id: "rhythm", title: "Ritmo", items: ["Sincronización Básica", "Imitación de Patrones", "Estabilidad del Pulso"] },
+    { id: "melody", title: "Melodía", items: ["Afinación / Canto", "Reconocimiento Melódico", "Exploración Vocal"] },
+    { id: "dynamics", title: "Dinámica y Expresión", items: ["Control de Intensidad", "Respuesta al Cambio", "Creatividad / Improvisación"] }
+];
+
+export const CHILD_LEVELS = [
+    { value: 0, label: "No Iniciado", color: "bg-slate-100 text-slate-400 border-slate-200" },
+    { value: 1, label: "Emergente", color: "bg-yellow-50 text-yellow-700 border-yellow-200" },
+    { value: 2, label: "En Proceso", color: "bg-blue-50 text-blue-700 border-blue-200" },
+    { value: 3, label: "Consolidado", color: "bg-emerald-50 text-emerald-700 border-emerald-200" }
+];
+
+// --- EVALUATION AREAS MAPPING ---
+export const EVALUATION_AREAS_ADULT = ["Atención", "Orientación", "Reg. Emocional", "Exp. Emocional", "Com. Verbal", "Com. No Verbal", "Social", "Musical", "Iniciativa"];
+export const EVALUATION_AREAS_CHILD = ["Sensoriomotor", "Comunicación", "Cognitivo", "Socio-Emocional", "Musical"];
+
+// --- DETAILED GDS STAGES ---
+export const GDS_STAGES = [
+    { value: "1", label: "GDS 1 - Sin deterioro", desc: "Ausencia de quejas subjetivas." },
+    { value: "2", label: "GDS 2 - Muy leve", desc: "Quejas subjetivas de memoria." },
+    { value: "3", label: "GDS 3 - Leve", desc: "Primeros déficits claros." },
+    { value: "4", label: "GDS 4 - Moderado", desc: "Déficit claro en entrevista." },
+    { value: "5", label: "GDS 5 - Mod-Grave", desc: "Necesita asistencia." },
+    { value: "6", label: "GDS 6 - Grave", desc: "Olvida nombres, dependiente." },
+    { value: "7", label: "GDS 7 - Muy grave", desc: "Pérdida verbal/motora total." }
+];
+
+// OVERWRITE EXISTING ARRAYS IF NEEDED OR EXTEND
 export const SESSION_ACTIVITIES = [
     { id: "welcome", label: "Bienvenida / Dinámica Inicial", placeholder: "Canción de saludo..." },
     { id: "improv", label: "Improvisación Instrumental", placeholder: "Instrumentos usados..." },
@@ -105,3 +161,15 @@ export const SESSION_ACTIVITIES = [
     { id: "relaxation", label: "Relajación", placeholder: "Técnica usada..." },
     { id: "closing", label: "Cierre / Despedida", placeholder: "Feedback..." }
 ];
+
+export const SESSION_ACTIVITIES_CHILD = [
+    { id: "welcome", label: "Canción de Bienvenida" },
+    { id: "rhythm_game", label: "Juego Rítmico Estructurado" },
+    { id: "turns", label: "Juego de Turnos Musicales" },
+    { id: "improv", label: "Improvisación / Exploración" },
+    { id: "movement", label: "Movimiento con Música" },
+    { id: "symbolic", label: "Juego Simbólico Sonoro" },
+    { id: "closing", label: "Canción de Cierre" }
+];
+
+export const SESSION_ACTIVITIES_ADULT = SESSION_ACTIVITIES;

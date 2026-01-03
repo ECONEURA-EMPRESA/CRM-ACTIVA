@@ -5,6 +5,7 @@ import { Button } from '../../components/ui/Button';
 import { Save, Building, CreditCard, Mail, Globe } from 'lucide-react';
 import { ClinicSettings } from '../../lib/types';
 import { Toast } from '../../components/ui/Toast';
+import { useAuth } from '../../context/AuthContext';
 
 interface SettingsViewProps {
     settings: ClinicSettings;
@@ -12,6 +13,7 @@ interface SettingsViewProps {
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({ settings, onSave }) => {
+    const { role, login } = useAuth();
     const [formData, setFormData] = useState<ClinicSettings>(settings);
     const [toast, setToast] = useState<{ msg: string, type: 'success' | 'error' } | null>(null);
 
@@ -53,6 +55,25 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ settings, onSave }) 
                                 <input className="input-pro" value={formData.phone || ''} onChange={e => setFormData({ ...formData, phone: e.target.value })} placeholder="+34 600 000 000" />
                             </div>
                         </div>
+
+                        <div className="pt-6 border-t border-slate-100">
+                            <h4 className="font-bold text-slate-800 mb-3 text-sm uppercase tracking-wide">Gestión de Datos</h4>
+                            <p className="text-xs text-slate-500 mb-4">Descarga una copia completa de tu base de datos en formato Excel/CSV.</p>
+                            <Button type="button" variant="secondary" className="w-full" onClick={() => {
+                                alert("Iniciando exportación masiva...");
+                                // Simulation of CSV generation with BOM for Excel
+                                const dummyData = "Nombre,Edad,Diagnóstico\nJuan,30,Stress\nAna,25,Ansiedad";
+                                const bom = "\uFEFF";
+                                const blob = new Blob([bom + dummyData], { type: 'text/csv;charset=utf-8;' });
+                                const url = URL.createObjectURL(blob);
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.setAttribute('download', `Pacientes_Activa_${new Date().toISOString().slice(0, 10)}.csv`);
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                            }} icon={Save}>Exportar Base de Datos (CSV)</Button>
+                        </div>
                     </Card>
 
                     {/* Legal & Invoice Data */}
@@ -90,6 +111,34 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ settings, onSave }) 
                             </div>
                         </Card>
                     </div>
+
+                    {/* Simulación de Roles (Dev Tool) */}
+                    <Card className="p-8 space-y-6 md:col-span-2 border-dashed border-2 border-slate-300 bg-slate-50">
+                        <h3 className="font-bold text-slate-500 flex items-center gap-2 uppercase tracking-widest text-xs">
+                            <div className="w-2 h-2 rounded-full bg-slate-400 animate-pulse" /> Simulación de Roles (Dev Mode)
+                        </h3>
+                        <div className="flex gap-4 items-center">
+                            <p className="text-sm text-slate-600 flex-1">
+                                Alterna entre roles para verificar la "Sanitización de Interfaz" (ocultación de precios y funciones destructivas).
+                            </p>
+                            <div className="flex bg-white rounded-lg p-1 border border-slate-200">
+                                <button
+                                    type="button"
+                                    onClick={() => login('admin')}
+                                    className={`px-4 py-2 text-sm font-bold rounded-md transition-all ${role === 'admin' ? 'bg-slate-800 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
+                                >
+                                    Admin (Dueño)
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => login('therapist')}
+                                    className={`px-4 py-2 text-sm font-bold rounded-md transition-all ${role === 'therapist' ? 'bg-pink-600 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
+                                >
+                                    Terapeuta (Clínico)
+                                </button>
+                            </div>
+                        </div>
+                    </Card>
                 </div>
 
                 <div className="mt-8 flex justify-end">

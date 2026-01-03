@@ -1,7 +1,7 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', '$_IMAGE_URI', '-f', 'apps/backend-api/Dockerfile', '.']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/backend-api', '-f', 'apps/backend-api/Dockerfile', '.']
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', '$_IMAGE_URI']
-substitutions:
-  _IMAGE_URI: 'europe-west1-docker.pkg.dev/crm-activa-2512311714/crm-repo/crm-api-prod:latest'
+    args: ['push', 'gcr.io/$PROJECT_ID/backend-api']
+images:
+  - 'gcr.io/$PROJECT_ID/backend-api'
